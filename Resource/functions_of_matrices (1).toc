@@ -67,5 +67,5 @@
 \contentsline {section}{\numberline {2.5}Thực nghiệm 4: Hàm dấu, căn bậc hai và logarit -- hội tụ và độ chính xác}{33}{section.2.5}%
 \contentsline {section}{\numberline {2.6}Tổng hợp và nhận xét kết quả}{35}{section.2.6}%
 \contentsline {subsection}{\numberline {2.6.1}So sánh tổng quan các phương pháp}{36}{subsection.2.6.1}%
-\contentsline {subsection}{\numberline {2.6.2}Khuyến nghị thực tế}{36}{subsection.2.6.2}%
-\contentsline {subsection}{\numberline {2.6.3}Tổng kết}{36}{subsection.2.6.3}%
+\contentsline {subsection}{\numberline {2.6.2}Tổng kết}{36}{subsection.2.6.2}%
+\contentsline {chapter}{Tài liệu tham khảo}{37}{chapter*.3}%

@@ -259,6 +259,42 @@
 \begin{document}
 
 % ============================================================
+% TRANG BÌA
+% ============================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+% Logo truong -- cap nhat duong dan anh sau
+\includegraphics[width=3cm]{qnu_logo.jpg}\\[0.8cm]
+
+{\large\bfseries TRƯỜNG ĐẠI HỌC QUY NHƠN}\\[0.5cm]
+
+{\normalsize\bfseries BÀI TIỂU LUẬN CUỐI KỲ HỌC PHẦN}\\[0.15cm]
+{\normalsize\bfseries PHƯƠNG PHÁP SỐ CHO ĐẠI SỐ TUYẾN TÍNH}\\[0.6cm]
+
+\rule{0.55\linewidth}{0.6pt}\\[2cm]
+
+{\fontsize{22}{28}\selectfont\bfseries\color{mainblue}
+FUNCTION OF MATRICES}\\[2cm]
+
+\rule{0.55\linewidth}{0.6pt}\\[2.5cm]
+
+\begin{tabular}{@{}ll@{}}
+  \textcolor{accentred}{\textbf{Trình độ đào tạo:}}     & \textcolor{mainblue}{Thạc sĩ} \\[0.5cm]
+  \textcolor{accentred}{\textbf{Học viên thực hiện:}}   & \textcolor{mainblue}{Nguyễn Hồ Bảo Thiên} \\[0.5cm]
+  \textcolor{accentred}{\textbf{Lớp:}}                  & \textcolor{mainblue}{Khoa học dữ liệu K28B} \\[0.5cm]
+  \textcolor{accentred}{\textbf{Giảng viên hướng dẫn:}} & \textcolor{mainblue}{TS. Nguyễn Văn Vũ} \\
+\end{tabular}
+
+\vfill
+
+{\normalsize Gia Lai, 2026}
+
+\end{center}
+\end{titlepage}
+
+% ============================================================
 %  MỤC LỤC
 % ============================================================
 \tableofcontents
@@ -1941,30 +1977,6 @@ Denman-Beavers          & Bậc hai                & Tốt hơn Newton       & $
 \end{tabular}}
 \end{center}
 
-\subsection{Khuyến nghị thực tế}
-
-\begin{importantbox}
-\textbf{Khuyến nghị thực hành:}
-\begin{enumerate}
-  \item \textbf{Hàm mũ $e^A$:} Luôn dùng \texttt{scipy.linalg.expm}
-    (Padé bậc 13 + Scaling and Squaring) trong thực tế. Chỉ tự cài đặt
-    khi nghiên cứu hoặc yêu cầu đặc biệt về hiệu năng.
-
-  \item \textbf{Logarit $\log(A)$:} Dùng \texttt{scipy.linalg.logm}
-    (Inverse Scaling and Squaring). Cẩn thận khi $A$ có trị riêng âm hoặc
-    phức (vấn đề chọn nhánh logarit).
-
-  \item \textbf{Căn bậc hai $A^{1/2}$:} \texttt{scipy.linalg.sqrtm} cho kết quả
-    tốt. Lặp Denman-Beavers hữu ích khi cần kiểm soát trực tiếp quá trình hội tụ.
-
-  \item \textbf{Ma trận lớn ($n \gg 1000$):} Chuyển sang phương pháp Krylov
-    (ví dụ: Expokit, Expmv) thay vì các phương pháp dense.
-
-  \item \textbf{Kiểm tra điều kiện:} Trước khi tính bất kỳ hàm ma trận nào,
-    nên kiểm tra số điều kiện $\kappa_2(A)$ và hoành độ phổ $\alpha(A)$ để dự
-    báo độ chính xác kết quả.
-\end{enumerate}
-\end{importantbox}
 
 \subsection{Tổng kết}
 
@@ -1976,5 +1988,26 @@ và tốc độ. Tuy nhiên, các phương pháp dựa trên phân tích Schur v
 với Scaling and Squaring nổi bật là lựa chọn ổn định và hiệu quả nhất cho mục
 đích tổng quát, và đây cũng là nền tảng của các thư viện số hiện đại như MATLAB,
 SciPy và Julia.
+
+% ============================================================
+% TÀI LIỆU THAM KHẢO
+% ============================================================
+\newpage
+\chapter*{Tài liệu tham khảo}
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
+
+\begin{enumerate}[label=(\arabic*)]
+
+\item G.~H. Golub \textbf{and} C.~F.~V. Loan,
+\textit{Matrix computations},
+In association with the Department of Mathematical Sciences,
+The Johns Hopkins University.,
+Johns Hopkins Univ. Press, Baltimore, MD, 4.~ed., 2013, 756~\textbf{pagetotals}.
+
+\item N.~J. Higham,
+\textit{Functions of Matrices},
+Society for Industrial \textbf{and} Applied Mathematics, 2008.
+
+\end{enumerate}
 
 \end{document}
