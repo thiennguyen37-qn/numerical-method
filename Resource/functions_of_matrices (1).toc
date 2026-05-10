@@ -1,0 +1,71 @@
+\xpg@aux {}{vietnamese}
+\contentsline {chapter}{Giới thiệu tổng quan}{3}{chapter*.2}%
+\contentsline {chapter}{\numberline {1}Lý thuyết về hàm của ma trận}{7}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Phương pháp trị riêng (Eigenvalue Methods)}{7}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Định nghĩa hàm ma trận qua dạng Jordan}{7}{subsection.1.1.1}%
+\contentsline {subsubsection}{Dạng chính tắc Jordan}{7}{subsection.1.1.1}%
+\contentsline {subsubsection}{Biểu diễn chuỗi Taylor}{7}{tcb@cnt@definition.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Phương pháp vector riêng (Eigenvector Approach)}{8}{subsection.1.1.2}%
+\contentsline {subsubsection}{Ví dụ minh họa}{9}{tcb@cnt@corollary.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.3}Phương pháp phân tích Schur}{9}{subsection.1.1.3}%
+\contentsline {subsubsection}{Ý tưởng chung}{9}{subsection.1.1.3}%
+\contentsline {subsubsection}{Công thức tường minh cho ma trận tam giác trên}{9}{subsection.1.1.3}%
+\contentsline {subsubsection}{Thuật toán Schur-Parlett}{9}{tcb@cnt@theorem.1.1.2}%
+\contentsline {subsubsection}{Phương pháp Schur-Parlett theo khối}{10}{tcb@cnt@theorem.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.4}Độ nhạy của hàm ma trận}{10}{subsection.1.1.4}%
+\contentsline {subsection}{\numberline {1.1.5}Mã nguồn Python minh họa}{11}{subsection.1.1.5}%
+\contentsline {section}{\numberline {1.2}Phương pháp xấp xỉ (Approximation Methods)}{12}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Chặn sai số: Phân tích Jordan}{12}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Chặn sai số: Phân tích Schur}{12}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Xấp xỉ bằng chuỗi Taylor cắt cụt}{13}{subsection.1.2.3}%
+\contentsline {subsubsection}{Kỹ thuật thu nhỏ (scaling)}{13}{tcb@cnt@theorem.1.2.3}%
+\contentsline {subsection}{\numberline {1.2.4}Tính đa thức ma trận hiệu quả}{13}{subsection.1.2.4}%
+\contentsline {subsection}{\numberline {1.2.5}Lũy thừa ma trận nhị phân (Binary Powering)}{14}{subsection.1.2.5}%
+\contentsline {subsection}{\numberline {1.2.6}Tích phân hàm ma trận}{14}{subsection.1.2.6}%
+\contentsline {subsection}{\numberline {1.2.7}Biểu diễn tích phân Cauchy}{14}{subsection.1.2.7}%
+\contentsline {subsection}{\numberline {1.2.8}Mã nguồn Python minh họa}{14}{subsection.1.2.8}%
+\contentsline {section}{\numberline {1.3}Hàm mũ ma trận (The Matrix Exponential)}{16}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Phương pháp xấp xỉ Padé kết hợp Scaling and Squaring}{16}{subsection.1.3.1}%
+\contentsline {subsubsection}{Hàm Padé}{16}{subsection.1.3.1}%
+\contentsline {subsubsection}{Hạn chế và cách khắc phục}{17}{subsection.1.3.1}%
+\contentsline {subsubsection}{Chặn sai số}{17}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Tối ưu hóa tính đa thức Padé}{17}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Lý thuyết nhiễu loạn của hàm mũ ma trận}{17}{subsection.1.3.3}%
+\contentsline {subsubsection}{Chặn tăng trưởng qua phân tích Schur}{18}{subsection.1.3.3}%
+\contentsline {subsubsection}{Số điều kiện của hàm mũ ma trận}{18}{subsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.3.4}pseudospectra và hành vi quá độ}{18}{subsection.1.3.4}%
+\contentsline {subsection}{\numberline {1.3.5}Phân tích ổn định của thuật toán Scaling and Squaring}{18}{subsection.1.3.5}%
+\contentsline {subsection}{\numberline {1.3.6}Mã nguồn Python minh họa}{19}{subsection.1.3.6}%
+\contentsline {section}{\numberline {1.4}Hàm dấu, căn bậc hai và logarit ma trận}{21}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Hàm dấu ma trận (Matrix Sign Function)}{21}{subsection.1.4.1}%
+\contentsline {subsubsection}{Định nghĩa}{21}{subsection.1.4.1}%
+\contentsline {subsubsection}{Ứng dụng tính không gian bất biến}{21}{subsection.1.4.1}%
+\contentsline {subsubsection}{Thuật toán lặp Newton}{21}{subsection.1.4.1}%
+\contentsline {subsubsection}{Biến thể và gia tốc}{22}{tcb@cnt@theorem.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Căn bậc hai ma trận (Matrix Square Root)}{22}{subsection.1.4.2}%
+\contentsline {subsubsection}{Sự không đơn trị}{22}{subsection.1.4.2}%
+\contentsline {subsubsection}{Lặp Newton cho căn bậc hai}{22}{tcb@cnt@definition.1.4.1}%
+\contentsline {subsubsection}{Mối liên hệ với hàm dấu ma trận}{22}{tcb@cnt@definition.1.4.1}%
+\contentsline {subsubsection}{Lặp Denman-Beavers}{23}{tcb@cnt@definition.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.3}Phân tích cực (Polar Decomposition)}{23}{subsection.1.4.3}%
+\contentsline {subsubsection}{Định lý cơ bản}{23}{subsection.1.4.3}%
+\contentsline {subsubsection}{Thuật toán lặp Newton cho nhân tử trực giao}{23}{tcb@cnt@theorem.1.4.2}%
+\contentsline {subsubsection}{Kết nối với hàm dấu}{23}{tcb@cnt@theorem.1.4.2}%
+\contentsline {subsubsection}{Lý thuyết nhiễu loạn}{23}{tcb@cnt@theorem.1.4.2}%
+\contentsline {subsection}{\numberline {1.4.4}Logarit ma trận (Matrix Logarithm)}{24}{subsection.1.4.4}%
+\contentsline {subsubsection}{Định nghĩa và tính không đơn trị}{24}{subsection.1.4.4}%
+\contentsline {subsubsection}{Các khai triển chuỗi cho hàm log}{24}{tcb@cnt@definition.1.4.2}%
+\contentsline {subsubsection}{Thuật toán Inverse Scaling and Squaring}{24}{tcb@cnt@definition.1.4.2}%
+\contentsline {subsection}{\numberline {1.4.5}Mã nguồn Python minh họa}{25}{subsection.1.4.5}%
+\contentsline {chapter}{\numberline {2}Triển khai thực nghiệm}{28}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Môi trường và thiết lập thực nghiệm}{28}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Yêu cầu thư viện}{28}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Các ma trận thử nghiệm chuẩn}{29}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}Thực nghiệm 1: Phương pháp trị riêng và Schur-Parlett}{30}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Thực nghiệm 2: Phương pháp xấp xỉ -- Taylor và ảnh hưởng của hủy số}{31}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Thực nghiệm 3: Scaling and Squaring -- phân tích hiệu năng theo kích thước}{32}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Thực nghiệm 4: Hàm dấu, căn bậc hai và logarit -- hội tụ và độ chính xác}{33}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Tổng hợp và nhận xét kết quả}{35}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}So sánh tổng quan các phương pháp}{36}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Khuyến nghị thực tế}{36}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.3}Tổng kết}{36}{subsection.2.6.3}%

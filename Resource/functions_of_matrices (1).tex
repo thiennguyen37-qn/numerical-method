@@ -1,0 +1,1980 @@
+% !TeX program = xelatex
+\documentclass[12pt,a4paper]{report}
+
+% ============================================================
+% GÓI LỆNH
+% ============================================================
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T5]{fontenc}
+  \usepackage[english,vietnamese]{babel}
+\else
+  \usepackage{fontspec}
+  \IfFontExistsTF{DejaVu Serif}
+    {\setmainfont{DejaVu Serif}}
+    {\setmainfont{Times New Roman}}
+  \IfFontExistsTF{DejaVu Sans}
+    {\setsansfont{DejaVu Sans}}
+    {\setsansfont{Arial}}
+  \IfFontExistsTF{DejaVu Sans Mono}
+    {\setmonofont{DejaVu Sans Mono}}
+    {\setmonofont{Courier New}}
+  \usepackage{polyglossia}
+  \setmainlanguage{vietnamese}
+  \setotherlanguage{english}
+\fi
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{mdframed}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{bm}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ============================================================
+% KÍCH THƯỚC TRANG
+% ============================================================
+\geometry{
+  a4paper,
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm,
+  headheight=15pt
+}
+
+% ============================================================
+% MÀU SẮC
+% ============================================================
+\definecolor{mainblue}{RGB}{0,70,140}
+\definecolor{lightblue}{RGB}{220,235,255}
+\definecolor{darkgray}{RGB}{50,50,50}
+\definecolor{accentred}{RGB}{180,0,30}
+\definecolor{codegreen}{RGB}{0,120,0}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codepurple}{RGB}{100,0,150}
+
+% ============================================================
+% SIÊU LIÊN KẾT
+% ============================================================
+\hypersetup{
+  colorlinks=true,
+  linkcolor=mainblue,
+  citecolor=accentred,
+  urlcolor=mainblue,
+  pdfauthor={Báo cáo tổng hợp},
+  pdftitle={Hàm của Ma Trận -- Báo cáo chuyên sâu},
+}
+
+% ============================================================
+% ĐẦU TRANG / CHÂN TRANG
+% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{mainblue}{\textit{Hàm của Ma Trận (Functions of Matrices)}}}
+\fancyhead[R]{\small\textcolor{mainblue}{\thepage}}
+\fancyfoot[C]{\small\textcolor{gray}{Golub \& Van Loan, \textit{Matrix Computations} -- Chương 9}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ============================================================
+% ĐỊNH DẠNG CHƯƠNG VÀ MỤC
+% ============================================================
+\titleformat{\chapter}[display]
+  {\Large\bfseries\color{mainblue}}
+  {\large\color{mainblue!70!black}\chaptername\ \thechapter}
+  {10pt}
+  {\Huge\bfseries\color{mainblue}}
+  [\vspace{4pt}\titlerule\vspace{6pt}]
+
+\titlespacing*{\chapter}{0pt}{10pt}{30pt}
+
+\titleformat{\section}{\Large\bfseries\color{mainblue}}{{\thesection}}{1em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{mainblue!80!black}}{{\thesubsection}}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{darkgray}}{{\thesubsubsection}}{1em}{}
+
+% ============================================================
+% MÔI TRƯỜNG ĐỊNH LÝ
+% ============================================================
+\tcbuselibrary{theorems, skins, breakable}
+
+\newtcbtheorem[number within=section]{theorem}{Theorem}{
+  enhanced, breakable,
+  lines before break=0,
+  colback=lightblue,
+  colframe=mainblue,
+  fonttitle=\bfseries,
+  separator sign={.},
+  label type=theorem
+}{thm}
+
+\newtcbtheorem[number within=section]{lemma}{Lemma}{
+  enhanced, breakable,
+  lines before break=0,
+  colback=blue!5,
+  colframe=blue!60!black,
+  fonttitle=\bfseries,
+  separator sign={.}
+}{lem}
+
+\newtcbtheorem[number within=section]{corollary}{Corollary}{
+  enhanced, breakable,
+  lines before break=0,
+  colback=green!5,
+  colframe=green!50!black,
+  fonttitle=\bfseries,
+  separator sign={.}
+}{cor}
+
+\newtcbtheorem[number within=section]{definition}{Definition}{
+  enhanced, breakable,
+  lines before break=0,
+  colback=orange!8,
+  colframe=orange!70!black,
+  fonttitle=\bfseries,
+  separator sign={.}
+}{def}
+
+\newtcbtheorem[number within=section]{remark}{Remark}{
+  enhanced, breakable,
+  lines before break=0,
+  colback=gray!10,
+  colframe=gray!60,
+  fonttitle=\bfseries,
+  separator sign={.}
+}{rem}
+
+% Khung thuật toán
+\newmdenv[
+  linecolor=mainblue,
+  backgroundcolor=codebg,
+  linewidth=1.2pt,
+  roundcorner=4pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt
+]{algobox}
+
+% Khung ghi chú quan trọng
+\newmdenv[
+  linecolor=accentred,
+  backgroundcolor=red!4,
+  linewidth=1.5pt,
+  roundcorner=4pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt
+]{importantbox}
+
+% ============================================================
+% LỆNH TOÁN HỌC
+% ============================================================
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\ran}{\operatorname{ran}}
+\newcommand{\sign}{\operatorname{sign}}
+\newcommand{\spec}{\lambda}
+\newcommand{\eA}{e^{A}}
+\newcommand{\fl}{\operatorname{fl}}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rank}{rank}
+
+% ============================================================
+% HIỂN THỊ MÃ NGUỒN (Python)
+% ============================================================
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{mainblue}\bfseries,
+  commentstyle=\color{codegreen}\itshape,
+  stringstyle=\color{accentred},
+  numberstyle=\tiny\color{gray},
+  backgroundcolor=\color{codebg},
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{mainblue!40},
+  numbers=left,
+  numbersep=8pt,
+  breaklines=true,
+  captionpos=b,
+  tabsize=4,
+  showstringspaces=false,
+  morekeywords={import, from, as, None, True, False, with, yield},
+  literate=
+    {á}{{á}}1 {à}{{à}}1 {ả}{{ả}}1 {ã}{{ã}}1 {ạ}{{ạ}}1
+    {ă}{{ă}}1 {ắ}{{ắ}}1 {ằ}{{ằ}}1 {ẳ}{{ẳ}}1 {ẵ}{{ẵ}}1 {ặ}{{ặ}}1
+    {â}{{â}}1 {ấ}{{ấ}}1 {ầ}{{ầ}}1 {ẩ}{{ẩ}}1 {ẫ}{{ẫ}}1 {ậ}{{ậ}}1
+    {é}{{é}}1 {è}{{è}}1 {ẻ}{{ẻ}}1 {ẽ}{{ẽ}}1 {ẹ}{{ẹ}}1
+    {ê}{{ê}}1 {ế}{{ế}}1 {ề}{{ề}}1 {ể}{{ể}}1 {ễ}{{ễ}}1 {ệ}{{ệ}}1
+    {í}{{í}}1 {ì}{{ì}}1 {ỉ}{{ỉ}}1 {ĩ}{{ĩ}}1 {ị}{{ị}}1
+    {ó}{{ó}}1 {ò}{{ò}}1 {ỏ}{{ỏ}}1 {õ}{{õ}}1 {ọ}{{ọ}}1
+    {ô}{{ô}}1 {ố}{{ố}}1 {ồ}{{ồ}}1 {ổ}{{ổ}}1 {ỗ}{{ỗ}}1 {ộ}{{ộ}}1
+    {ơ}{{ơ}}1 {ớ}{{ớ}}1 {ờ}{{ờ}}1 {ở}{{ở}}1 {ỡ}{{ỡ}}1 {ợ}{{ợ}}1
+    {ú}{{ú}}1 {ù}{{ù}}1 {ủ}{{ủ}}1 {ũ}{{ũ}}1 {ụ}{{ụ}}1
+    {ư}{{ư}}1 {ứ}{{ứ}}1 {ừ}{{ừ}}1 {ử}{{ử}}1 {ữ}{{ữ}}1 {ự}{{ự}}1
+    {ý}{{ý}}1 {ỳ}{{ỳ}}1 {ỷ}{{ỷ}}1 {ỹ}{{ỹ}}1 {ỵ}{{ỵ}}1 {đ}{{đ}}1
+    {Á}{{Á}}1 {À}{{À}}1 {Ả}{{Ả}}1 {Ã}{{Ã}}1 {Ạ}{{Ạ}}1
+    {Ă}{{Ă}}1 {Ắ}{{Ắ}}1 {Ằ}{{Ằ}}1 {Ẳ}{{Ẳ}}1 {Ẵ}{{Ẵ}}1 {Ặ}{{Ặ}}1
+    {Â}{{Â}}1 {Ấ}{{Ấ}}1 {Ầ}{{Ầ}}1 {Ẩ}{{Ẩ}}1 {Ẫ}{{Ẫ}}1 {Ậ}{{Ậ}}1
+    {É}{{É}}1 {È}{{È}}1 {Ẻ}{{Ẻ}}1 {Ẽ}{{Ẽ}}1 {Ẹ}{{Ẹ}}1
+    {Ê}{{Ê}}1 {Ế}{{Ế}}1 {Ề}{{Ề}}1 {Ể}{{Ể}}1 {Ễ}{{Ễ}}1 {Ệ}{{Ệ}}1
+    {Í}{{Í}}1 {Ì}{{Ì}}1 {Ỉ}{{Ỉ}}1 {Ĩ}{{Ĩ}}1 {Ị}{{Ị}}1
+    {Ó}{{Ó}}1 {Ò}{{Ò}}1 {Ỏ}{{Ỏ}}1 {Õ}{{Õ}}1 {Ọ}{{Ọ}}1
+    {Ô}{{Ô}}1 {Ố}{{Ố}}1 {Ồ}{{Ồ}}1 {Ổ}{{Ổ}}1 {Ỗ}{{Ỗ}}1 {Ộ}{{Ộ}}1
+    {Ơ}{{Ơ}}1 {Ớ}{{Ớ}}1 {Ờ}{{Ờ}}1 {Ở}{{Ở}}1 {Ỡ}{{Ỡ}}1 {Ợ}{{Ợ}}1
+    {Ú}{{Ú}}1 {Ù}{{Ù}}1 {Ủ}{{Ủ}}1 {Ũ}{{Ũ}}1 {Ụ}{{Ụ}}1
+    {Ư}{{Ư}}1 {Ứ}{{Ứ}}1 {Ừ}{{Ừ}}1 {Ử}{{Ử}}1 {Ữ}{{Ữ}}1 {Ự}{{Ự}}1
+    {Ý}{{Ý}}1 {Ỳ}{{Ỳ}}1 {Ỷ}{{Ỷ}}1 {Ỹ}{{Ỹ}}1 {Ỵ}{{Ỵ}}1 {Đ}{{Đ}}1,
+}
+
+\lstset{style=python}
+
+% ============================================================
+% BẮT ĐẦU TÀI LIỆU
+% ============================================================
+\begin{document}
+
+% ============================================================
+%  MỤC LỤC
+% ============================================================
+\tableofcontents
+\newpage
+
+% ============================================================
+% CHƯƠNG MỞ ĐẦU: GIỚI THIỆU TỔNG QUAN
+% (Không thuộc Chương 1 hay Chương 2)
+% ============================================================
+\chapter*{Giới thiệu tổng quan}
+\addcontentsline{toc}{chapter}{Giới thiệu tổng quan}
+
+Tính toán hàm $f(A)$ của một ma trận vuông $A \in \R^{n \times n}$ (hoặc $\C^{n \times n}$)
+là một bài toán xuất hiện phổ biến trong nhiều lĩnh vực ứng dụng: hệ thống điều khiển,
+phương trình vi phân ma trận, cơ học lượng tử, học máy và xử lý tín hiệu. Đây không
+chỉ là sự mở rộng hình thức của khái niệm hàm số thực lên không gian ma trận, mà còn
+là một lĩnh vực nghiên cứu sâu sắc với nhiều thách thức về lý thuyết lẫn tính toán số.
+
+\section*{Bối cảnh lịch sử và tầm quan trọng}
+
+Lịch sử của hàm ma trận gắn liền với sự phát triển của đại số tuyến tính hiện đại.
+Vào cuối thế kỷ XIX, Arthur Cayley (1858) và William Rowan Hamilton đã đặt nền móng
+với định lý Cayley--Hamilton: mọi ma trận đều thỏa đa thức đặc trưng của chính nó,
+tức là $p(A) = 0$ với $p(\lambda) = \det(\lambda I - A)$. Từ đó, mọi hàm của $A$ có
+thể được rút gọn thành đa thức bậc không quá $n-1$, cung cấp một cơ sở lý thuyết
+quan trọng cho toàn bộ lĩnh vực.
+
+Bước tiến lớn tiếp theo đến từ lý thuyết giải tích hàm (functional calculus), được
+phát triển mạnh trong nửa đầu thế kỷ XX. Frigyes Riesz và Béla Sz.-Nagy đã xây dựng
+lý thuyết phổ cho toán tử tuyến tính trên không gian Hilbert, từ đó lý thuyết hàm
+ma trận trở thành trường hợp hữu hạn chiều đặc biệt của một khung lý thuyết rộng
+lớn hơn nhiều. Đặc biệt, tích phân Cauchy cung cấp một cách định nghĩa thống nhất
+và tổng quát cho mọi loại hàm ma trận.
+
+Về mặt ứng dụng thực tiễn, nhu cầu tính toán hàm ma trận tăng vọt từ những năm
+1960--1970 khi máy tính điện tử trở nên phổ biến. Cleve Moler và Charles Van Loan
+(1978) tổng hợp 19 phương pháp tính hàm mũ ma trận, cho ra bài báo nổi tiếng
+\emph{``Nineteen Dubious Ways to Compute the Exponential of a Matrix''} và cho thấy
+không có phương pháp nào hoàn toàn vượt trội. Công trình này đã thúc đẩy hàng thập
+kỷ nghiên cứu sau đó, đặc biệt bởi Nicholas Higham và các cộng sự.
+
+\section*{Ý tưởng cơ bản}
+
+Nếu hàm số vô hướng $f(z)$ xác định trên phổ $\lambda(A)$ của $A$, thì $f(A)$ được
+xác định bằng cách thay ``$A$'' vào ``$z$'' trong công thức của $f(z)$. Ví dụ:
+\begin{itemize}
+  \item Nếu $f(z) = \frac{1+z}{1-z}$ và $1 \notin \lambda(A)$, thì
+        \[
+          f(A) = (I+A)(I-A)^{-1}.
+        \]
+  \item Hàm mũ: $e^A = \sum_{k=0}^{\infty} \dfrac{A^k}{k!}$.
+  \item Hàm logarit: $\log(A)$ là ma trận $X$ thỏa $e^X = A$.
+  \item Căn bậc hai: $A^{1/2}$ là ma trận $X$ thỏa $X^2 = A$.
+\end{itemize}
+
+Tuy nhiên, sự chuyển đổi từ hàm vô hướng sang hàm ma trận không phải lúc nào cũng
+đơn giản. Khi $A$ là ma trận chéo hóa được, ta chỉ cần áp dụng $f$ lên từng trị
+riêng. Nhưng khi $A$ có trị riêng lặp hoặc không chéo hóa được, định nghĩa cần
+được mở rộng thông qua đạo hàm của $f$, dẫn đến lý thuyết về dạng chính tắc Jordan.
+
+Bài toán trở nên thú vị và thách thức hơn khi $f$ là hàm siêu việt (transcendental)
+như hàm mũ, logarit, lượng giác. Trong những trường hợp này, không tồn tại công
+thức đóng đơn giản; ta cần dùng đến các phương pháp số với phân tích sai số cẩn thận.
+
+\section*{Các lĩnh vực ứng dụng}
+
+Sự quan trọng của hàm ma trận thể hiện rõ ở tính phổ biến của chúng trong nhiều
+ngành khoa học và kỹ thuật:
+
+\begin{description}[leftmargin=2cm, labelindent=0.5cm]
+  \item[\textbf{Phương trình vi phân}]
+    Nghiệm của hệ phương trình vi phân tuyến tính $\dot{x}(t) = Ax(t)$, $x(0) = x_0$
+    có dạng $x(t) = e^{At} x_0$. Hàm mũ ma trận $e^{At}$ do đó là trung tâm của lý
+    thuyết hệ động lực tuyến tính.
+
+  \item[\textbf{Lý thuyết điều khiển}]
+    Ma trận kiểm soát (controllability matrix), ma trận quan sát\\ (observability matrix),
+    và các bài toán tối ưu LQR đều liên quan đến hàm mũ ma trận. Phương trình Riccati
+    ma trận, nền tảng của điều khiển tối ưu, được giải thông qua hàm dấu và phân tích
+    cực ma trận.
+
+  \item[\textbf{Khoa học mạng (Network Science)}]
+    Số mũ ma trận được dùng để đo tính kết nối và phân tích lan truyền thông tin trong
+    mạng lưới. Centrality measures như communi\-cability dựa trực tiếp trên $e^A$ với $A$
+    là ma trận kề của đồ thị.
+
+  \item[\textbf{Cơ học lượng tử}]
+    Toán tử tiến hóa trong cơ học lượng tử có dạng $U(t) = e^{-iHt/\hbar}$, trong đó
+    $H$ là toán tử Hamiltonian. Việc tính toán hiệu quả ma trận $e^{-iH}$ là bài toán
+    trung tâm trong mô phỏng lượng tử.
+
+  \item[\textbf{Học máy và thống kê}]
+    Trong học biểu diễn trên đa tạp Lie (Lie group learning), các phép tính trên không
+    gian Riemannian đòi hỏi dùng hàm mũ và logarit ma trận. Hồi quy trên không gian
+    đối xứng dương định (SPD matrices), quan trọng trong xử lý ảnh y tế và học sâu,
+    dựa trên metric Riemannian với $\log$ và $\exp$ ma trận.
+
+  \item[\textbf{Tài chính định lượng}]
+    Các mô hình tín dụng liên tục (continuous-time credit models) và mô hình xác suất
+    chuyển tiếp (transition probability models) liên quan đến tính $e^{Qt}$ với $Q$ là
+    ma trận cường độ (generator matrix) của xích Markov liên tục.
+
+  \item[\textbf{Phương trình vi phân đại số (DAEs)}]
+    Hàm dấu ma trận được dùng để phân tách phổ của bó ma trận (matrix pencils), từ
+    đó tách phần chỉ số hữu hạn và vô hạn trong DAEs.
+
+  \item[\textbf{Xử lý tín hiệu và hình ảnh}]
+    Biến đổi ma trận theo hàm lũy thừa phân số $A^\alpha$ ($\alpha \in (0,1)$) xuất
+    hiện trong mô hình khuếch tán phân số (fractional diffusion), được ứng dụng trong
+    nén ảnh và lọc tín hiệu thích nghi.
+\end{description}
+
+\section*{Thách thức tính toán}
+
+Mặc dù định nghĩa lý thuyết của hàm ma trận tương đối rõ ràng thông qua dạng Jordan
+hay tích phân Cauchy, việc tính toán số chính xác và hiệu quả đặt ra nhiều thách thức:
+
+\textbf{1. Khuếch đại sai số làm tròn.} Do phép nhân ma trận tích lũy sai số,
+các phương pháp naive như chuỗi Taylor có thể cho kết quả sai hoàn toàn dù mỗi
+bước tính toán trông có vẻ đúng (hiện tượng ``catastrophic cancellation'').
+
+\textbf{2. Tính không đơn trị.} Hàm logarit và căn bậc hai ma trận không đơn trị:
+cùng một ma trận $A$ có thể có nhiều logarit hoặc nhiều căn bậc hai. Việc chọn
+``nhánh chính'' (principal branch) và đảm bảo thuật toán hội tụ về đúng nhánh đó
+đòi hỏi phân tích cẩn thận.
+
+\textbf{3. Trị riêng lặp hoặc gần nhau.} Khi $A$ có trị riêng lặp, các sai phân
+chia (divided differences) trong công thức Schur-Parlett có thể mất ổn định số.
+Cần dùng công thức thay thế dựa trên giới hạn (limit forms) của sai phân chia.
+
+\textbf{4. Ma trận không chính tắc (non-normal).} Với ma trận không chính tắc,
+hàm mũ $e^{At}$ có thể tăng trước khi suy giảm dù mọi trị riêng có phần thực âm
+--- hiện tượng được gọi là \emph{tăng trưởng quá độ} (transient growth). Phân tích
+phổ cổ điển không nắm bắt được hành vi này; cần dùng lý thuyết pseudospectra.
+
+\textbf{5. Chi phí tính toán.} Với ma trận lớn ($n$ hàng nghìn hoặc hàng triệu),
+chi phí $O(n^3)$ của các phương pháp dày (dense) trở nên không khả thi. Phương
+pháp Krylov subspace và phương pháp thưa (sparse methods) trở thành lựa chọn bắt buộc.
+
+\section*{Tổng quan bốn hướng tiếp cận}
+
+Báo cáo này trình bày bốn hướng tiếp cận chính, mỗi hướng có ưu và nhược điểm riêng:
+
+\begin{enumerate}[label=\roman*.]
+  \item \textbf{Phương pháp trị riêng} (Phần~\ref{sec:eigen}): dựa trên phân tích
+    Jordan và Schur. Phân tích Jordan cho định nghĩa nền tảng; phân tích Schur
+    cho thuật toán Schur-Parlett ổn định số trong thực tế. Phương pháp này phù hợp
+    khi cần tính chính xác cao với ma trận có kích thước vừa phải.
+
+  \item \textbf{Phương pháp xấp xỉ} (Phần~\ref{sec:approx}): xấp xỉ $f$ bởi hàm
+    đơn giản hơn $g$ (đa thức, hàm hữu tỉ). Bao gồm chuỗi Taylor cắt cụt, xấp xỉ
+    Padé, và các kỹ thuật cầu phương. Hiệu quả và linh hoạt nhưng đòi hỏi phân tích
+    sai số cẩn thận để tránh hủy số.
+
+  \item \textbf{Hàm mũ ma trận} (Phần~\ref{sec:expm}): phương pháp scaling and
+    squaring kết hợp xấp xỉ Padé là thuật toán ``vàng'' cho $e^A$, được dùng trong
+    hầu hết các thư viện số hiện đại (MATLAB, SciPy).
+    Phần này cũng phân tích lý thuyết nhiễu loạn và số điều kiện của hàm mũ.
+
+  \item \textbf{Hàm dấu, căn bậc hai và logarit} (Phần~\ref{sec:signlogsqrt}):
+    các hàm này liên kết mật thiết với nhau qua lặp Newton và lặp Denman-Beavers.
+    Phân tích cực ma trận cũng được trình bày như một ứng dụng quan trọng.
+\end{enumerate}
+
+\section*{Ký hiệu và quy ước}
+
+Trong bài báo cáo ta dùng các ký hiệu sau:
+\begin{itemize}
+  \item $\lambda(A)$: tập phổ (tập trị riêng) của $A$.
+  \item $\kappa_2(X) = \norm{X}_2 \norm{X^{-1}}_2$: số điều kiện theo chuẩn 2.
+  \item $\norm{\cdot}_F$: chuẩn Frobenius.
+  \item $u$: machine epsilon (độ chính xác máy tính), với IEEE 754 double precision
+    $u \approx 2.22 \times 10^{-16}$.
+  \item JCF: Jordan Canonical Form (dạng chính tắc Jordan).
+  \item $Q^H$: liên hợp chuyển vị (Hermitian transpose) của $Q$.
+  \item $\alpha(A) = \max\{\re(\lambda): \lambda \in \lambda(A)\}$: hoành độ phổ
+    (spectral abscissa).
+  \item $\sigma_i(A)$: trị kỳ dị (singular value) thứ $i$ của $A$ theo thứ tự giảm dần.
+  \item $\rho(A) = \max\{|\lambda|: \lambda \in \lambda(A)\}$: bán kính phổ.
+\end{itemize}
+
+
+% ============================================================
+% CHƯƠNG 1: LÝ THUYẾT VỀ HÀM CỦA MA TRẬN
+% ============================================================
+\chapter{Lý thuyết về hàm của ma trận}
+
+% ============================================================
+% MỤC 1: PHƯƠNG PHÁP TRỊ RIÊNG
+% ============================================================
+\section{Phương pháp trị riêng (Eigenvalue Methods)}
+\label{sec:eigen}
+
+\subsection{Định nghĩa hàm ma trận qua dạng Jordan}
+
+\subsubsection{Dạng chính tắc Jordan}
+
+Giả sử $A \in \C^{n \times n}$ có phân tích Jordan
+\begin{equation}
+  A = X \cdot \diag(J_1, \ldots, J_q) \cdot X^{-1},
+  \label{eq:jcf}
+\end{equation}
+trong đó mỗi khối Jordan có dạng
+\[
+  J_i = \begin{pmatrix}
+    \lambda_i & 1      & \cdots & 0      \\
+    0         & \lambda_i & \ddots & \vdots \\
+    \vdots    & \ddots & \ddots & 1      \\
+    0         & \cdots & 0      & \lambda_i
+  \end{pmatrix} \in \C^{n_i \times n_i}, \quad i = 1, \ldots, q.
+\]
+
+\begin{definition}{Hàm ma trận (Jordan)}{matfun}
+Hàm $f(A)$ được xác định bởi
+\[
+  f(A) = X \cdot \diag(F_1, \ldots, F_q) \cdot X^{-1},
+\]
+trong đó
+\[
+  F_i = \begin{pmatrix}
+    f(\lambda_i) & f^{(1)}(\lambda_i) & \cdots & \dfrac{f^{(n_i-1)}(\lambda_i)}{(n_i-1)!} \\[6pt]
+    0            & f(\lambda_i)        & \ddots & \vdots                                      \\
+    \vdots       & \ddots              & \ddots & f^{(1)}(\lambda_i)                          \\
+    0            & \cdots              & 0      & f(\lambda_i)
+  \end{pmatrix}.
+\]
+Định nghĩa này đòi hỏi tất cả các đạo hàm $f^{(k)}(\lambda_i)$ cần thiết phải tồn tại.
+\end{definition}
+
+\subsubsection{Biểu diễn chuỗi Taylor}
+
+Nếu $f$ có thể biểu diễn bằng chuỗi Taylor trên phổ của $A$, thì $f(A)$ có cùng
+biểu diễn đó nhưng thay $z$ bởi $A$.
+
+\begin{theorem}{Biểu diễn chuỗi Taylor}{taylor}
+Nếu $f$ có biểu diễn Taylor
+\[
+  f(z) = \sum_{k=0}^{\infty} \frac{f^{(k)}(z_0)}{k!}(z - z_0)^k, \quad |z - z_0| < r,
+\]
+và $|\lambda - z_0| < r$ với mọi $\lambda \in \lambda(A)$, thì
+\[
+  f(A) = \sum_{k=0}^{\infty} \frac{f^{(k)}(z_0)}{k!}(A - z_0 I)^k.
+\]
+\end{theorem}
+
+Bổ đề nền tảng cho định lý này xét trường hợp $A$ là một khối Jordan đơn:
+
+\begin{lemma}{Khối Jordan đơn}{jordanblock}
+Giả sử $B \in \C^{m \times m}$ là khối Jordan, $B = \lambda I_m + E$ ($E$ là phần
+bidiagonal trên nghiêm ngặt). Nếu $|\lambda - z_0| < r$, thì
+\[
+  f(B) = \sum_{k=0}^{\infty} \frac{f^{(k)}(z_0)}{k!}(B - z_0 I_m)^k.
+\]
+Hơn nữa, nếu $0 \le p \le m-1$, thì $[E^p]_{ij} = \delta_{i,j-p}$, và
+\[
+  f(B) = \sum_{p=0}^{m-1} \frac{f^{(p)}(\lambda)}{p!} E^p.
+\]
+\end{lemma}
+
+Các hàm ma trận quan trọng có biểu diễn chuỗi Taylor đơn giản bao gồm:
+\[
+  e^A = \sum_{k=0}^{\infty} \frac{A^k}{k!}, \quad
+  \log(I-A) = -\sum_{k=1}^{\infty} \frac{A^k}{k}\ (|\lambda| < 1),
+\]
+\[
+  \sin(A) = \sum_{k=0}^{\infty} \frac{(-1)^k A^{2k+1}}{(2k+1)!}, \quad
+  \cos(A) = \sum_{k=0}^{\infty} \frac{(-1)^k A^{2k}}{(2k)!}.
+\]
+
+Từ định nghĩa này ta có hai tính chất giao hoán quan trọng:
+\[
+  A \cdot f(A) = f(A) \cdot A, \qquad
+  f(X^{-1}AX) = X^{-1} f(A) X.
+\]
+
+\subsection{Phương pháp vector riêng (Eigenvector Approach)}
+
+Khi $A$ là ma trận chéo hóa được: $A = X \diag(\lambda_1, \ldots, \lambda_n) X^{-1}$,
+ta có hệ quả sau:
+
+\begin{corollary}{Ma trận chéo hóa được}{diag}
+\[
+  f(A) = X \cdot \diag\bigl(f(\lambda_1), \ldots, f(\lambda_n)\bigr) \cdot X^{-1}.
+\]
+\end{corollary}
+
+
+\subsubsection{Ví dụ minh họa}
+
+Xét
+\[
+  A = \begin{pmatrix} 1 + 10^{-5} & 1 \\ 0 & 1 - 10^{-5} \end{pmatrix}.
+\]
+Ma trận vector riêng có $\kappa_2(X) \approx 10^5$. Với $u \approx 10^{-7}$, tính
+$e^A$ qua đường chéo hóa cho kết quả sai ở chữ số thứ 2 của phần tử $(1,2)$, trong
+khi kết quả chính xác là $[e^A]_{12} \approx 2.718282$.
+
+\subsection{Phương pháp phân tích Schur}
+
+\subsubsection{Ý tưởng chung}
+
+Một số khó khăn của phương pháp Jordan có thể được khắc phục bằng cách dùng
+\emph{phân tích Schur}: $A = Q T Q^H$ ($Q$ unitary, $T$ tam giác trên). Khi đó:
+\[
+  f(A) = Q \, f(T) \, Q^H.
+\]
+Vấn đề còn lại là tính $f(T)$ cho ma trận tam giác trên.
+
+\subsubsection{Công thức tường minh cho ma trận tam giác trên}
+
+\begin{theorem}{Hàm của ma trận tam giác trên -- Schur}{schurfun}
+Gọi $T = (t_{ij})$ là ma trận tam giác trên $n \times n$ với $\lambda_i = t_{ii}$,
+$F = f(T) = (f_{ij})$. Thì $f_{ij} = 0$ khi $i > j$, $f_{ii} = f(\lambda_i)$, và với
+$i < j$:
+\[
+  f_{ij} = \sum_{(s_0,\ldots,s_k) \in S_{ij}}
+           t_{s_0 s_1} t_{s_1 s_2} \cdots t_{s_{k-1} s_k}
+           \, f[\lambda_{s_0}, \ldots, \lambda_{s_k}],
+\]
+trong đó $S_{ij}$ là tập tất cả dãy tăng nghiêm ngặt từ $i$ đến $j$, và
+$f[\lambda_{s_0},\ldots,\lambda_{s_k}]$ là \emph{sai phân chia bậc $k$} (divided difference)
+của $f$.
+\end{theorem}
+
+Ví dụ cho $3\times 3$:
+\[
+  f\!\begin{pmatrix}\lambda_1 & t_{12} & t_{13} \\ 0 & \lambda_2 & t_{23} \\ 0 & 0 & \lambda_3\end{pmatrix}
+  =
+  \begin{pmatrix}
+    f(\lambda_1) & t_{12}\dfrac{f(\lambda_2)-f(\lambda_1)}{\lambda_2-\lambda_1} & F_{13} \\[8pt]
+    0 & f(\lambda_2) & t_{23}\dfrac{f(\lambda_3)-f(\lambda_2)}{\lambda_3-\lambda_2} \\[8pt]
+    0 & 0 & f(\lambda_3)
+  \end{pmatrix},
+\]
+trong đó $F_{13}$ là tổ hợp tuyến tính của các sai phân chia bậc 1 và bậc 2.
+
+\subsubsection{Thuật toán Schur-Parlett}
+
+Parlett (1974) phát triển một phương pháp đệ quy hiệu quả dựa trên phương trình
+$FT = TF$. So sánh phần tử $(i,j)$ của hai vế (với $t_{ii} \ne t_{jj}$):
+\[
+  f_{ij} = \frac{t_{ij}(f_{jj} - f_{ii})}{t_{jj} - t_{ii}}
+           + \sum_{k=i+1}^{j-1} \frac{t_{ik} f_{kj} - f_{ik} t_{kj}}{t_{jj} - t_{ii}}.
+\]
+
+\begin{algobox}
+\textbf{Thuật toán 1.1.1 (Schur-Parlett)} \quad Tính $F = f(T)$ với $T$ tam giác trên,
+trị riêng phân biệt.
+
+\medskip
+\textbf{Bước 1.} Khởi tạo đường chéo: $f_{ii} = f(t_{ii})$, $i = 1:n$.
+
+\textbf{Bước 2.} Với $p = 1, 2, \ldots, n-1$ (siêu đường chéo thứ $p$):
+\[
+  \text{Với } i = 1:n-p,\quad j = i+p:
+  \quad
+  f_{ij} = \frac{t_{ij}(f_{jj}-f_{ii}) + \sum_{k=i+1}^{j-1}(t_{ik}f_{kj} - f_{ik}t_{kj})}{t_{jj} - t_{ii}}.
+\]
+
+\medskip
+\textit{Độ phức tạp:} $\tfrac{2}{3}n^3$ phép tính dấu phẩy động (flops).
+Khi đó $f(A) = Q F Q^H$.
+\end{algobox}
+
+\subsubsection{Phương pháp Schur-Parlett theo khối}
+
+Khi $A$ có trị riêng lặp hoặc gần nhau, sai phân chia trong Thuật toán 1.1.1 trở
+nên bất ổn định số. Giải pháp là dùng phiên bản \emph{theo khối}:
+
+\begin{enumerate}
+  \item Chọn $Q$ sao cho $T$ được phân hoạch thành các khối chéo
+        $T_{11}, T_{22}, \ldots, T_{pp}$ với $\lambda(T_{ii}) \cap \lambda(T_{jj}) = \emptyset$
+        và mỗi $T_{ii}$ gắn với một cụm trị riêng.
+  \item Tính $F_{ii} = f(T_{ii})$ cho từng khối chéo (dùng phương pháp riêng cho
+        cụm trị riêng).
+  \item Tính các khối ngoài đường chéo $F_{ij}$ ($i < j$) qua hệ Sylvester:
+        \[
+          F_{ij}T_{jj} - T_{ii}F_{ij} = T_{ij}F_{jj} - F_{ii}T_{ij}
+          + \sum_{k=i+1}^{j-1}(T_{ik}F_{kj} - F_{ik}T_{kj}).
+        \]
+        Hệ này được giải bằng thuật toán Bartels-Stewart.
+\end{enumerate}
+
+\subsection{Độ nhạy của hàm ma trận}
+
+\begin{definition}{Số điều kiện tương đối}{condrel}
+Số điều kiện tương đối của $f$ tại $A \in \C^{n \times n}$ là
+\[
+  \mathrm{cond}_{\mathrm{rel}}(f, A)
+  = \lim_{\varepsilon \to 0}
+    \sup_{\norm{E} \le \varepsilon \norm{A}}
+    \frac{\norm{f(A+E) - f(A)}}{\norm{f(A)}}.
+\]
+\end{definition}
+
+Đây thực chất là chuẩn hóa của đạo hàm Fréchet của ánh xạ $A \mapsto f(A)$.
+Việc cài đặt cẩn thận thuật toán Schur-Parlett theo khối thường cho kết quả
+\emph{ổn định tiến} (forward stable):
+\[
+  \frac{\norm{\hat{F} - f(A)}}{\norm{f(A)}} \approx u \cdot \mathrm{cond}_{\mathrm{rel}}(f,A).
+\]
+Điều này \emph{không thể} đảm bảo với phương pháp chéo hóa khi $X$ kém điều kiện.
+
+% ------------------------------------------------------------------
+% PYTHON MINH HỌA – PHƯƠNG PHÁP TRỊ RIÊNG
+% ------------------------------------------------------------------
+\subsection{Mã nguồn Python minh họa}
+
+Đoạn mã dưới đây minh họa ba cách tính $e^A$: qua phân tích trị riêng (vector riêng),
+qua phân tích Schur (Schur-Parlett đơn giản hóa), và dùng thư viện SciPy. Kết quả
+so sánh cho thấy ảnh hưởng của số điều kiện $\kappa_2(X)$ lên độ chính xác.
+
+\begin{lstlisting}[style=python, caption={Phương pháp trị riêng: tính $f(A) = e^A$ và so sánh độ chính xác}]
+import numpy as np
+from scipy.linalg import expm, schur
+
+# -------------------------------------------------------
+# 1. Ma trận ví dụ: có số điều kiện cao
+# -------------------------------------------------------
+eps = 1e-5
+A = np.array([[1 + eps, 1.0],
+              [0.0,     1 - eps]], dtype=float)
+
+# -------------------------------------------------------
+# 2. Phương pháp 1: Phân tích trị riêng (eigenvector)
+# -------------------------------------------------------
+eigenvalues, X = np.linalg.eig(A)
+kappa = np.linalg.cond(X)               # số điều kiện của X
+f_eig = np.exp(eigenvalues)             # áp dụng f = exp lên trị riêng
+fA_eig = X @ np.diag(f_eig) @ np.linalg.inv(X)
+
+# -------------------------------------------------------
+# 3. Phương pháp 2: Phân tích Schur + công thức phần tử
+# -------------------------------------------------------
+T, Q = schur(A, output='complex')       # A = Q T Q^H
+# Tính f(T) cho ma trận tam giác trên 2x2
+fT = np.zeros_like(T)
+lam = np.diag(T)
+fT[0, 0] = np.exp(lam[0])
+fT[1, 1] = np.exp(lam[1])
+# Sai phân chia bậc 1 cho phần tử (0,1)
+if abs(lam[1] - lam[0]) > 1e-14:
+    fT[0, 1] = T[0, 1] * (fT[1, 1] - fT[0, 0]) / (lam[1] - lam[0])
+else:
+    fT[0, 1] = T[0, 1] * np.exp(lam[0])   # giới hạn khi lambda trùng nhau
+fA_schur = Q @ fT @ Q.conj().T
+
+# -------------------------------------------------------
+# 4. Phương pháp 3: SciPy expm (Padé + thu nhỏ và bình phương)
+# -------------------------------------------------------
+fA_scipy = expm(A)
+
+# -------------------------------------------------------
+# 5. So sánh kết quả
+# -------------------------------------------------------
+print("="*55)
+print(f"  Số điều kiện của ma trận vector riêng: kappa = {kappa:.2e}")
+print("="*55)
+print("\nKết quả qua phân tích trị riêng (eigenvector):")
+print(fA_eig.real)
+print("\nKết quả qua Schur-Parlett (đơn giản hóa):")
+print(fA_schur.real)
+print("\nKết quả SciPy expm (chuẩn xác):")
+print(fA_scipy)
+
+err_eig    = np.linalg.norm(fA_eig.real - fA_scipy, 'fro')
+err_schur  = np.linalg.norm(fA_schur.real - fA_scipy, 'fro')
+print(f"\nSai số Frobenius (eigenvector vs scipy): {err_eig:.2e}")
+print(f"Sai số Frobenius (Schur      vs scipy): {err_schur:.2e}")
+\end{lstlisting}
+
+% ============================================================
+% MỤC 2: PHƯƠNG PHÁP XẤP XỈ
+% ============================================================
+\section{Phương pháp xấp xỉ (Approximation Methods)}
+\label{sec:approx}
+
+Ý tưởng cốt lõi: nếu $g(z) \approx f(z)$ trên $\lambda(A)$, thì $g(A) \approx f(A)$.
+Ví dụ:
+\[
+  e^A \approx I + A + \frac{A^2}{2!} + \cdots + \frac{A^q}{q!}.
+\]
+
+\subsection{Chặn sai số: Phân tích Jordan}
+
+\begin{theorem}{Sai số xấp xỉ -- Jordan}{errjordan}
+Giả sử $A = X \diag(J_1,\ldots,J_q) X^{-1}$ là JCF của $A$. Nếu $f,g$ giải tích
+trên tập mở chứa $\lambda(A)$, thì
+\[
+  \norm{f(A) - g(A)}_2
+  \le \kappa_2(X) \cdot \max_{\substack{1 \le i \le q \\ 0 \le r \le n_i-1}}
+      \frac{\abs{f^{(r)}(\lambda_i) - g^{(r)}(\lambda_i)}}{r!}.
+\]
+Chặn này phụ thuộc trực tiếp vào số điều kiện $\kappa_2(X)$ của ma trận vector riêng.
+\end{theorem}
+
+\subsection{Chặn sai số: Phân tích Schur}
+
+\begin{theorem}{Sai số xấp xỉ -- Schur}{errschur}
+Gọi $Q^H AQ = T = \diag(\lambda_i) + N$ là phân tích Schur của $A$, $N$ là phần
+tam giác trên nghiêm ngặt. Nếu $f,g$ giải tích trên tập lồi đóng $\Omega$ chứa
+$\lambda(A)$ trong nội bộ, thì
+\[
+  \norm{f(A) - g(A)}_F
+  \le \sum_{r=0}^{n-1} \delta_r \,
+      \frac{\bigl\| |N|^r \bigr\|_F}{r!},
+  \qquad
+  \delta_r = \sup_{z \in \Omega} \abs{f^{(r)}(z) - g^{(r)}(z)}.
+\]
+\end{theorem}
+
+\begin{remark}{So sánh hai chặn}{compare_bounds}
+Chặn Jordan phụ thuộc $\kappa_2(X)$; chặn Schur phụ thuộc chuẩn của $N$ (độ lệch
+chuẩn tắc). Với ma trận kém điều kiện eigensystem, chặn Jordan có thể quá bi quan.
+Ví dụ: nếu $\kappa_2(X) \approx 10^7$ thì chặn Jordan dự đoán sai số $O(1)$ trong
+khi chặn Schur cho $O(10^{-2})$ và sai số thực tế $\approx 10^{-5}$.
+\end{remark}
+
+\subsection{Xấp xỉ bằng chuỗi Taylor cắt cụt}
+
+\begin{theorem}{Sai số Taylor cắt cụt}{taylorerr}
+Nếu $f(z) = \sum_{k=0}^\infty \alpha_k z^k$ trên đĩa mở chứa $\lambda(A)$, thì
+\[
+  \left\| f(A) - \sum_{k=0}^{q} \alpha_k A^k \right\|_2
+  \le \frac{n}{(q+1)!} \max_{0 \le s \le 1}
+      \norm{A^{q+1} f^{(q+1)}(sA)}_2.
+\]
+\end{theorem}
+
+\begin{importantbox}
+\textbf{Cảnh báo thực tế:} Việc lấy nhiều số hạng hơn không nhất thiết tăng độ chính
+xác! Các tổng trung gian có thể có phần tử cỡ lớn, dẫn đến hủy số nghiêm trọng
+(catastrophic cancellation). Ví dụ với
+$A = \begin{pmatrix} -49 & 24 \\ -64 & 31 \end{pmatrix}$:
+lấy $q=59$ cho lỗi lý thuyết $<10^{-60}$, nhưng kết quả tính thực tế sai hoàn toàn
+vì các tổng trung gian có phần tử $\sim 10^7$ vượt ngưỡng máy tính $u \approx 10^{-7}$.
+\end{importantbox}
+
+\subsubsection{Kỹ thuật thu nhỏ (scaling)}
+
+Để khắc phục hạn chế của Taylor cắt cụt gần gốc tọa độ, người ta dùng các công thức
+nhân đôi góc. Ví dụ cho sin/cos:
+\[
+  \cos(2A) = 2\cos^2(A) - I, \qquad \sin(2A) = 2\sin(A)\cos(A).
+\]
+Từ đó xây dựng $\sin(A)$ và $\cos(A)$ từ các xấp xỉ Taylor cho $\sin(A/2^k)$ và
+$\cos(A/2^k)$ với $k$ đủ lớn để $\norm{A}_\infty \approx 2^k$.
+
+\subsection{Tính đa thức ma trận hiệu quả}
+
+Cần tính $p(A) = b_0 I + b_1 A + \cdots + b_q A^q$. Horner thông thường cần $q-1$
+phép nhân ma trận. Tuy nhiên, thuật toán Paterson--Stockmeyer cho phép tính với
+$s + r - 1$ phép nhân khi chọn $s = \lfloor\sqrt{q}\rfloor$, $r = \lfloor q/s \rfloor$:
+\[
+  p(A) = \sum_{k=0}^{r} B_k (A^s)^k,
+\]
+giảm đáng kể số phép nhân ma trận.
+
+\begin{algobox}
+\textbf{Thuật toán 1.2.1 (Horner scheme cho đa thức ma trận)}
+
+\medskip
+Nhập: $A \in \R^{n\times n}$, hệ số $b_0,\ldots,b_q$.
+\[
+  F \leftarrow b_q A + b_{q-1}I; \quad
+  \text{Với } k = q-2, q-3, \ldots, 0: F \leftarrow AF + b_k I.
+\]
+Độ phức tạp: $q-1$ phép nhân ma trận.
+\end{algobox}
+
+\subsection{Lũy thừa ma trận nhị phân (Binary Powering)}
+
+\begin{algobox}
+\textbf{Thuật toán 1.2.2 (Binary Powering)} \quad Tính $F = A^s$.
+
+\medskip
+Viết $s = \sum_{k=0}^{t} \beta_k 2^k$ (khai triển nhị phân). Bắt đầu từ $Z = A$,
+bình phương liên tiếp và nhân có chọn lọc theo bit 1.
+
+\medskip
+Độ phức tạp: tối đa $2\lfloor \log_2 s \rfloor$ phép nhân ma trận.
+\end{algobox}
+
+\subsection{Tích phân hàm ma trận}
+
+Để tính $F = \int_a^b f(At)\,dt$, áp dụng quy tắc cầu phương (ví dụ: Simpson):
+\[
+  \tilde{F} = \frac{h}{3}\sum_{k=0}^{m} w_k f(A(a + kh)),
+\]
+với sai số bị chặn bởi
+\[
+  \norm{\tilde{F} - F}_2 \le \frac{n h^4 (b-a)}{180}
+  \max_{a \le t \le b} \norm{f^{(4)}(At)}_2.
+\]
+
+\subsection{Biểu diễn tích phân Cauchy}
+
+Còn một cách định nghĩa $f(A)$ khác thông qua định lý tích phân Cauchy:
+\[
+  f(A) = \frac{1}{2\pi i} \oint_\Gamma f(z)(zI - A)^{-1}\,dz,
+\]
+trong đó $\Gamma$ là đường cong kín bao quanh $\lambda(A)$ và $f$ giải tích trong
+và trên $\Gamma$. Phương pháp này, kết hợp với công cụ cầu phương bậc cao, cho phép
+tính toán một số loại hàm ma trận hiệu quả.
+
+% ------------------------------------------------------------------
+% PYTHON MINH HỌA – PHƯƠNG PHÁP XẤP XỈ
+% ------------------------------------------------------------------
+\subsection{Mã nguồn Python minh họa}
+
+Mã nguồn dưới đây trình bày: (1) xấp xỉ Taylor cắt cụt và hiện tượng hủy số,
+(2) lược đồ Horner tính đa thức ma trận, (3) so sánh sai số theo bậc xấp xỉ $q$.
+
+\begin{lstlisting}[style=python, caption={Phương pháp xấp xỉ: Taylor cắt cụt, Horner, và hiện tượng catastrophic cancellation}]
+import numpy as np
+from scipy.linalg import expm
+
+# -------------------------------------------------------
+# Hàm tính e^A bằng chuỗi Taylor cắt cụt bậc q
+# -------------------------------------------------------
+def expm_taylor(A, q):
+    """Xấp xỉ e^A bằng tổng Taylor bậc q."""
+    n = A.shape[0]
+    F    = np.eye(n)          # số hạng k=0
+    Ak   = np.eye(n)          # A^k
+    fact = 1.0
+    for k in range(1, q + 1):
+        Ak   = Ak @ A
+        fact *= k
+        F   += Ak / fact
+    return F
+
+# Hàm tính đa thức ma trận p(A) bằng lược đồ Horner
+def horner(A, coeffs):
+    """
+    Tính p(A) = coeffs[0]*I + coeffs[1]*A + ... + coeffs[q]*A^q
+    dùng lược đồ Horner.
+    coeffs[0] là hệ số tự do, coeffs[-1] là hệ số bậc cao nhất.
+    """
+    n = A.shape[0]
+    q = len(coeffs) - 1
+    F = coeffs[q] * np.eye(n)
+    for k in range(q - 1, -1, -1):
+        F = F @ A + coeffs[k] * np.eye(n)
+    return F
+
+# -------------------------------------------------------
+# Ví dụ 1: Ma trận hiền lành
+# A có trị riêng âm (ổn định, hàm mũ giảm)
+# -------------------------------------------------------
+A_ok = np.array([[1.0, 2.0],
+                 [0.0, 3.0]])
+ref  = expm(A_ok)
+
+print("Ví dụ 1 -- Ma trận bình thường A = [[1,2],[0,3]]")
+print(f"  Kết quả chuẩn xác (SciPy): \n{ref}\n")
+for q in [5, 10, 20, 30]:
+    approx = expm_taylor(A_ok, q)
+    err = np.linalg.norm(approx - ref, 'fro')
+    print(f"  q={q:2d}  ||Taylor - chính xác||_F = {err:.2e}")
+
+# -------------------------------------------------------
+# Ví dụ 2: Ma trận "ngổ ngáo" -- hủy số nghiêm trọng
+# A có trị riêng 1 và -17 (phổ lớn)
+# -------------------------------------------------------
+A_bad = np.array([[-49.0, 24.0],
+                  [-64.0, 31.0]])
+ref_bad = expm(A_bad)
+
+print("\nVí dụ 2 -- Ma trận gây hủy số A = [[-49,24],[-64,31]]")
+print(f"  Kết quả chuẩn xác:\n{ref_bad}\n")
+print("  Bậc q  ||Taylor - chính xác||_F   Max|phần tử trung gian|")
+for q in [10, 20, 40, 59]:
+    approx = expm_taylor(A_bad, q)
+    err = np.linalg.norm(approx - ref_bad, 'fro')
+    # Tính giá trị lớn nhất của tổng trung gian (theo dõi hủy số)
+    n = A_bad.shape[0]
+    Ak = np.eye(n); fact = 1.0; max_elem = 0.0
+    for k in range(1, q + 1):
+        Ak = Ak @ A_bad; fact *= k
+        max_elem = max(max_elem, np.max(np.abs(Ak / fact)))
+    print(f"  q={q:3d}  {err:.2e}                  {max_elem:.2e}")
+
+# -------------------------------------------------------
+# Ví dụ 3: Lược đồ Horner cho đa thức ma trận
+# p(x) = 1 + x + x^2/2 + x^3/6 (Taylor bậc 3 của e^x)
+# -------------------------------------------------------
+A_small = np.array([[0.1, 0.2],
+                    [0.0, 0.3]])
+coeffs = [1.0, 1.0, 0.5, 1/6]   # hệ số [b0, b1, b2, b3]
+p_horner = horner(A_small, coeffs)
+p_direct = (np.eye(2) + A_small
+            + A_small @ A_small / 2
+            + A_small @ A_small @ A_small / 6)
+print("\nVí dụ 3 -- Kiểm tra Horner vs tính trực tiếp:")
+print(f"  ||Horner - tính trực tiếp||_F = {np.linalg.norm(p_horner - p_direct):.2e}")
+\end{lstlisting}
+
+% ============================================================
+% MỤC 3: HÀM MŨ MA TRẬN
+% ============================================================
+\section{Hàm mũ ma trận (The Matrix Exponential)}
+\label{sec:expm}
+
+Hàm mũ ma trận
+\[
+  e^{At} = \sum_{k=0}^{\infty} \frac{(At)^k}{k!}
+\]
+là một trong những hàm ma trận được tính toán nhiều nhất trong thực tế, đặc biệt
+trong lý thuyết điều khiển và giải phương trình vi phân.
+
+\subsection{Phương pháp xấp xỉ Padé kết hợp Scaling and Squaring}
+
+\subsubsection{Hàm Padé}
+
+Xấp xỉ Padé $(p,q)$ cho hàm mũ được định nghĩa bởi:
+\[
+  R_{pq}(z) = D_{pq}(z)^{-1} N_{pq}(z),
+\]
+trong đó
+\[
+  N_{pq}(z) = \sum_{k=0}^{p} \frac{(p+q-k)!\,p!}{(p+q)!\,k!\,(p-k)!} z^k,
+  \qquad
+  D_{pq}(z) = \sum_{k=0}^{q} \frac{(p+q-k)!\,q!}{(p+q)!\,k!\,(q-k)!} (-z)^k.
+\]
+Trường hợp $q=0$: $R_{p0}(z) = 1 + z + \cdots + z^p/p!$ (đa thức Taylor bậc $p$).
+
+\subsubsection{Hạn chế và cách khắc phục}
+
+Xấp xỉ Padé chỉ chính xác gần gốc. Khai triển sai số:
+\[
+  e^A = R_{pq}(A)
+  + \frac{(-1)^q}{(p+q)!} A^{p+q+1} D_{pq}(A)^{-1}
+    \int_0^1 u^p(1-u)^q e^{A(1-u)}\,du.
+\]
+Khắc phục bằng kỹ thuật \emph{thu nhỏ và bình phương} (scaling and squaring):
+\[
+  e^A = \left(e^{A/m}\right)^m, \quad m = 2^j \text{ (chọn $j$ phù hợp)}.
+\]
+Tính $F_{pq} = R_{pq}(A/2^j) \approx e^{A/2^j}$, rồi bình phương $j$ lần:
+$e^A \approx F_{pq}^{2^j}$.
+
+\subsubsection{Chặn sai số}
+
+Nếu $\norm{A}_\infty / 2^j \le 1/2$, tồn tại $E$ sao cho $F_{pq} = e^{A+E}$, $AE=EA$, và
+\[
+  \norm{E}_\infty \le \varepsilon(p,q)\norm{A}_\infty,
+  \quad
+  \varepsilon(p,q) = 2^{3-(p+q)} \frac{p!\,q!}{(p+q)!\,(p+q+1)!}.
+\]
+
+\begin{algobox}
+\textbf{Thuật toán 1.3.1 (Scaling and Squaring)} \\
+Nhập: $\delta > 0$, $A \in \R^{n\times n}$. Xuất: $F \approx e^A$ với sai số $\le \delta \norm{A}_\infty$.
+
+\medskip
+1. $j = \max\{0,\, 1+\lfloor \log_2\norm{A}_\infty \rfloor\}$; \quad $A \leftarrow A/2^j$.\\
+2. Chọn $q$ nhỏ nhất sao cho $\varepsilon(q,q) \le \delta$.\\
+3. Tính $N = N_{qq}(A)$ và $D = D_{qq}(A)$ bằng Horner.\\
+4. Giải $DF = N$ bằng phép khử Gauss.\\
+5. Bình phương $j$ lần: $F \leftarrow F^2$ ($j$ lần).
+
+\medskip
+\textit{Độ phức tạp:} $\approx 2(q + j + 1/3)n^3$ flops.
+\end{algobox}
+
+\subsection{Tối ưu hóa tính đa thức Padé}
+
+Dùng kỹ thuật Horner đặc biệt của §1.2.4, ví dụ với $q=8$:
+\[
+  N_{88}(A) = U + AV, \quad D_{88}(A) = U - AV,
+\]
+với $U = c_0 I + c_2 A^2 + (c_4 I + c_6 A^2 + c_8 A^4)A^4$,
+$V = c_1 I + c_3 A^2 + (c_5 I + c_7 A^2)A^4$.
+Chỉ cần 5 phép nhân thay vì 7.
+
+\subsection{Lý thuyết nhiễu loạn của hàm mũ ma trận}
+
+Xuất phát điểm là bài toán giá trị ban đầu:
+\[
+  \dot{X}(t) = AX(t), \quad X(0) = I \implies X(t) = e^{At}.
+\]
+Đồng nhất thức quan trọng:
+\[
+  e^{(A+E)t} - e^{At} = \int_0^t e^{A(t-s)} E\, e^{(A+E)s}\,ds.
+\]
+
+\subsubsection{Chặn tăng trưởng qua phân tích Schur}
+
+Gọi $Q^H AQ = \diag(\lambda_i) + N$ là phân tích Schur. Thì:
+\[
+  \norm{e^{At}}_2 \le e^{\alpha(A)t} M_S(t), \quad
+  M_S(t) = \sum_{k=0}^{n-1} \frac{(\norm{N}_2 t)^k}{k!},
+\]
+trong đó $\alpha(A) = \max\{\re(\lambda): \lambda \in \lambda(A)\}$ là \emph{hoành độ phổ}
+(spectral abscissa). Nếu $A$ là chính tắc ($N=0$), thì $M_S(t) \equiv 1$ và
+$\norm{e^{At}}_2 = e^{\alpha(A)t}$.
+
+\subsubsection{Số điều kiện của hàm mũ ma trận}
+
+\begin{definition}{Số điều kiện $\nu(A,t)$}{condexp}
+\[
+  \nu(A,t) = \max_{\norm{E} \le 1}
+  \frac{\displaystyle\left\|\int_0^t e^{A(t-s)} E\, e^{As}\,ds\right\|_2}
+       {\norm{A}_2 \norm{e^{At}}_2}.
+\]
+\end{definition}
+
+Tính chất: $\nu(A,t) \ge t\norm{A}_2$, với đẳng thức khi và chỉ khi $A$ chính tắc.
+Nếu $\nu(A,t)$ lớn, thay đổi nhỏ trong $A$ có thể gây thay đổi lớn trong $e^{At}$.
+
+\subsection{pseudospectra và hành vi quá độ}
+
+Nếu $A$ không chính tắc, hàm mũ có thể \emph{tăng trước khi suy giảm} dù mọi trị riêng
+đều có phần thực âm. Ví dụ minh họa:
+\[
+  A = \begin{pmatrix} -1 & 1000 \\ 0 & -1 \end{pmatrix}
+  \implies
+  e^{At} = e^{-t}\begin{pmatrix} 1 & 1000t \\ 0 & 1 \end{pmatrix}.
+\]
+$\norm{e^{At}}_2$ đạt đỉnh $\approx 500$ tại $t \approx 1$ dù $\alpha(A) = -1 < 0$.
+
+pseudospectra cho chặn dưới hữu dụng: với mọi $\varepsilon > 0$,
+\[
+  \sup_{t > 0} \norm{e^{At}}_2 \ge \frac{\alpha_\varepsilon(A)}{\varepsilon},
+\]
+trong đó $\alpha_\varepsilon(A) = \sup_{z \in \Lambda_\varepsilon(A)} \re(z)$ là
+\emph{hoành độ pseudospectra $\varepsilon$}.
+
+\subsection{Phân tích ổn định của thuật toán Scaling and Squaring}
+
+Vấn đề trong bước bình phương: nếu $\norm{e^{At}}$ tăng mạnh ban đầu, sai số làm tròn
+tích lũy qua các lần bình phương:
+\[
+  \gamma = u \cdot \norm{G^2}_2 \cdot \norm{G^4}_2 \cdots \norm{G^{2^{j-1}}}_2.
+\]
+Nếu có tăng trưởng ban đầu lớn, $\gamma \gg u\norm{e^A}_2$, tức là không thể đảm bảo
+sai số tương đối nhỏ. Với $A$ chính tắc, $\gamma \approx u\norm{e^A}_2$: thuật toán
+luôn cho sai số tương đối nhỏ.
+
+% ------------------------------------------------------------------
+% PYTHON MINH HỌA – HÀM MŨ MA TRẬN
+% ------------------------------------------------------------------
+\subsection{Mã nguồn Python minh họa}
+
+Mã dưới đây cài đặt thuật toán Scaling and Squaring với xấp xỉ Padé bậc $(6,6)$,
+sau đó minh họa hiện tượng tăng trưởng quá độ với ma trận không chính tắc.
+
+\begin{lstlisting}[style=python, caption={Hàm mũ ma trận: Scaling and Squaring + Padé, và hiện tượng transient growth}]
+import numpy as np
+from scipy.linalg import expm
+from math import factorial
+
+# -------------------------------------------------------
+# Xấp xỉ Padé (p,p) cho hàm mũ
+# -------------------------------------------------------
+def pade_coeff(p):
+    """Trả về hệ số của N_pp(z) và D_pp(z)."""
+    c = np.zeros(p + 1)
+    for k in range(p + 1):
+        c[k] = (factorial(p + p - k) * factorial(p)
+                / (factorial(p + p) * factorial(k) * factorial(p - k)))
+    # N_pp(z) = sum c[k] z^k
+    # D_pp(z) = sum c[k] (-z)^k  =>  hệ số: c[k]*(-1)^k
+    N_coeffs = c.copy()
+    D_coeffs = c * np.array([(-1)**k for k in range(p + 1)])
+    return N_coeffs, D_coeffs
+
+def poly_matrix(A, coeffs):
+    """Tính đa thức ma trận bằng Horner: tổng theo k của coeffs[k] A^k."""
+    n = A.shape[0]
+    q = len(coeffs) - 1
+    F = coeffs[q] * np.eye(n)
+    for k in range(q - 1, -1, -1):
+        F = F @ A + coeffs[k] * np.eye(n)
+    return F
+
+def expm_scaling_squaring(A, p=6):
+    """
+    Scaling and Squaring với xấp xỉ Padé bậc (p,p).
+    - Thu nhỏ: chọn j sao cho ||A/2^j||_inf <= 0.5
+    - Tính Padé: R = D^{-1} N
+    - Bình phương j lần
+    """
+    A = np.array(A, dtype=float)
+    norm_inf = np.max(np.sum(np.abs(A), axis=1))
+    j = max(0, int(np.ceil(np.log2(norm_inf / 0.5)))) if norm_inf > 0.5 else 0
+    As = A / (2 ** j)                      # thu nhỏ
+
+    N_c, D_c = pade_coeff(p)
+    N = poly_matrix(As, N_c)
+    D = poly_matrix(As, D_c)
+    F = np.linalg.solve(D, N)              # F = D^{-1} N
+
+    for _ in range(j):                     # bình phương j lần
+        F = F @ F
+    return F
+
+# -------------------------------------------------------
+# So sánh với SciPy expm
+# -------------------------------------------------------
+A_test = np.array([[2.0, 1.0, 0.0],
+                   [0.0, -1.0, 3.0],
+                   [0.0, 0.0, 0.5]])
+F_mine  = expm_scaling_squaring(A_test, p=6)
+F_scipy = expm(A_test)
+err = np.linalg.norm(F_mine - F_scipy, 'fro')
+print("So sánh Scaling-Squaring (Padé p=6) vs SciPy expm:")
+print(f"  ||F_mine - F_scipy||_F = {err:.2e}")
+
+# -------------------------------------------------------
+# Hiện tượng tăng trưởng quá độ
+# A = [[-1, 1000],[0, -1]], trị riêng đều = -1 (âm)
+# nhưng ||e^At||_2 tăng mạnh trước khi giảm
+# -------------------------------------------------------
+A_nt = np.array([[-1.0, 1000.0],
+                 [ 0.0,   -1.0]])
+
+t_vals = np.linspace(0, 3, 300)
+norms  = []
+for t in t_vals:
+    eAt = expm(A_nt * t)
+    norms.append(np.linalg.norm(eAt, 2))
+
+idx_max = np.argmax(norms)
+print("\nHiện tượng tăng trưởng quá độ với A = [[-1,1000],[0,-1]]:")
+print(f"  Giá trị lớn nhất của ||e^At||_2 = {norms[idx_max]:.1f}")
+print(f"  Đạt tại t = {t_vals[idx_max]:.3f}")
+print(f"  (dù rằng alpha(A) = -1 < 0 nên e^At phải giảm trong dài hạn)")
+
+# Kiểm chứng bằng công thức giải tích
+# e^{At} = e^{-t} [[1, 1000t],[0, 1]]
+t_check = t_vals[idx_max]
+eAt_analytic = np.exp(-t_check) * np.array([[1, 1000*t_check],
+                                             [0, 1]])
+print(f"  Kiểm tra: ||e^At||_2 (giải tích) = "
+      f"{np.linalg.norm(eAt_analytic, 2):.1f}")
+\end{lstlisting}
+
+% ============================================================
+% MỤC 4: HÀM DẤU, CĂN BẬC HAI VÀ LOGARIT MA TRẬN
+% ============================================================
+\section{Hàm dấu, căn bậc hai và logarit ma trận}
+\label{sec:signlogsqrt}
+
+\subsection{Hàm dấu ma trận (Matrix Sign Function)}
+
+\subsubsection{Định nghĩa}
+
+Với $z \in \C$ không nằm trên trục ảo:
+\[
+  \sign(z) = \begin{cases} -1 & \text{nếu } \re(z) < 0, \\ +1 & \text{nếu } \re(z) > 0. \end{cases}
+\]
+
+Giả sử $A \in \C^{n\times n}$ không có trị riêng thuần ảo, JCF được sắp xếp:
+\[
+  J = \begin{pmatrix} J_1 & 0 \\ 0 & J_2 \end{pmatrix},
+\]
+$\lambda(J_1)$ nằm trong nửa phẳng trái, $\lambda(J_2)$ nằm trong nửa phẳng phải. Thì:
+\[
+  \sign(A) = X \begin{pmatrix} -I_{m_1} & 0 \\ 0 & I_{m_2} \end{pmatrix} X^{-1}.
+\]
+
+\subsubsection{Ứng dụng tính không gian bất biến}
+
+Với phân hoạch $X = [X_1\,|\,X_2]$, $X^{-H} = [Y_1\,|\,Y_2]$:
+\[
+  \frac{1}{2}(I + \sign(A)) = X_2 Y_2^H \quad \text{(rank $m_2$)}.
+\]
+Phân tích QR-với-đổi cột của ma trận này cho xấp xỉ không gian bất biến gắn với
+các trị riêng nửa phẳng phải.
+
+\subsubsection{Thuật toán lặp Newton}
+
+Hàm dấu là nghiệm của $g(z) = z^2 - 1 = 0$. Tương tự Newton vô hướng:
+\[
+  S_0 = A; \qquad S_{k+1} = \frac{1}{2}\left(S_k + S_k^{-1}\right), \quad k = 0, 1, \ldots
+\]
+
+\begin{theorem}{Hội tụ Newton sign}{newtonsign}
+Nếu $A$ không có trị riêng thuần ảo, dãy $\{S_k\}$ xác định với mọi $k$,
+$\sign(S_k) = \sign(A)$ cho mọi $k$, và $S_k \to \sign(A)$ với tốc độ bậc hai:
+\[
+  \norm{S_{k+1} - S} \le \frac{1}{2}\norm{S_k^{-1}} \cdot \norm{S_k - S}^2.
+\]
+Bằng chứng dựa trên $G_k = (S_k - S)(S_k + S)^{-1}$ thỏa $G_{k+1} = G_k^2 \to 0$.
+\end{theorem}
+
+\subsubsection{Biến thể và gia tốc}
+
+\textbf{Lặp Newton-Schulz:} Dùng xấp xỉ $S_k^{-1} \approx S_k(2I - S_k^2)$:
+\[
+  S_{k+1} = \frac{1}{2} S_k (3I - S_k^2).
+\]
+Không cần tính nghịch đảo ma trận, nhưng chỉ hội tụ cục bộ.
+
+\textbf{Lặp có hệ số tỷ lệ:}
+\[
+  S_{k+1} = \frac{1}{2}\left(\mu_k S_k + (\mu_k S_k)^{-1}\right),
+\]
+với các lựa chọn $\mu_k = |\det(S_k)|^{1/n}$ hoặc $\mu_k = \sqrt{\rho(S_k^{-1})/\rho(S_k)}$.
+
+\subsection{Căn bậc hai ma trận (Matrix Square Root)}
+
+\subsubsection{Sự không đơn trị}
+
+Ma trận có thể có nhiều căn bậc hai. Ví dụ:
+\[
+  A = \begin{pmatrix} 4 & 10 \\ 0 & 9 \end{pmatrix}
+  \text{ có ít nhất 4 căn bậc hai: }
+  \begin{pmatrix} \pm 2 & * \\ 0 & \pm 3 \end{pmatrix}.
+\]
+
+\begin{definition}{Căn bậc hai chính (Principal Square Root)}{principalsqrt}
+$F = A^{1/2}$ là \emph{căn bậc hai chính} của $A$ nếu $F^2 = A$ và mọi trị riêng của
+$F$ đều có phần thực dương.
+\end{definition}
+
+\subsubsection{Lặp Newton cho căn bậc hai}
+
+Tương tự Newton vô hướng $x_{k+1} = (x_k + a/x_k)/2$:
+\[
+  X_0 = A; \qquad X_{k+1} = \frac{1}{2}(X_k + X_k^{-1}A), \quad k = 0, 1, \ldots
+\]
+Thay $X_k = A^{1/2} S_k$ vào trên cho ra lặp Newton sign cho $A^{1/2}$: hội tụ toàn
+cục và bậc hai.
+
+\subsubsection{Mối liên hệ với hàm dấu ma trận}
+
+Áp dụng lặp Newton sign cho ma trận ghép:
+\[
+  \tilde{A} = \begin{pmatrix} 0 & A \\ I & 0 \end{pmatrix}.
+\]
+Qua quy nạp, các vòng lặp $\tilde{S}_k$ có dạng $\begin{pmatrix} 0 & X_k \\ Y_k & 0 \end{pmatrix}$,
+và:
+\[
+  \sign\!\begin{pmatrix} 0 & A \\ I & 0 \end{pmatrix}
+  = \begin{pmatrix} 0 & A^{1/2} \\ A^{-1/2} & 0 \end{pmatrix}.
+\]
+
+\subsubsection{Lặp Denman-Beavers}
+
+Từ quan hệ trên, lặp Denman-Beavers có thuộc tính số tốt hơn Newton:
+\[
+  X_{k+1} = \frac{X_k + Y_k^{-1}}{2}, \quad
+  Y_{k+1} = \frac{Y_k + X_k^{-1}}{2},
+\]
+với $X_0 = A$, $Y_0 = I$. Dãy này hội tụ $X_k \to A^{1/2}$, $Y_k \to A^{-1/2}$.
+
+\subsection{Phân tích cực (Polar Decomposition)}
+
+\subsubsection{Định lý cơ bản}
+
+\begin{theorem}{Phân tích cực}{polar}
+Nếu $A \in \R^{m \times n}$, $m \ge n$, thì tồn tại $U \in \R^{m \times n}$ (cột
+trực chuẩn) và $P \in \R^{n \times n}$ (nửa xác định dương đối xứng) sao cho $A = UP$.
+\end{theorem}
+
+Chứng minh dựa trên SVD mỏng: $A = U_A \Sigma_A V_A^T$ cho $U = U_A V_A^T$,
+$P = V_A \Sigma_A V_A^T$. Ta có $P = (A^T A)^{1/2}$ và nếu $\rank(A)=n$ thì
+$U = A(A^T A)^{-1/2}$.
+
+\subsubsection{Thuật toán lặp Newton cho nhân tử trực giao}
+
+\[
+  X_0 = A; \qquad X_{k+1} = \frac{X_k + X_k^{-T}}{2}, \quad k = 0, 1, \ldots
+\]
+Nếu $X_k = U_k P_k$ (phân tích cực của $X_k$), thì
+\[
+  X_{k+1} = U_k \cdot \frac{P_k + P_k^{-1}}{2}.
+\]
+Do $P_{k+1} = (P_k + P_k^{-1})/2$ đây chính là lặp Newton sign cho $P_0 = P$.
+Vì $P_k \to \sign(P) = I$ bậc hai, nên $X_k \to U$ bậc hai.
+
+\subsubsection{Kết nối với hàm dấu}
+
+\[
+  \sign\!\begin{pmatrix} 0 & A \\ A^T & 0 \end{pmatrix}
+  = \begin{pmatrix} 0 & U \\ U^T & 0 \end{pmatrix},
+\]
+trong đó $U = U_A V_A^T$ là nhân tử trực giao của $A$.
+
+\subsubsection{Lý thuyết nhiễu loạn}
+
+\newpage
+\begin{theorem}{Nhiễu loạn phân tích cực -- Li và Sun (2003)}{polarperturb}
+Nếu $A, \tilde{A} \in \R^{n\times n}$ không suy biến với nhân tử trực giao $U$ và
+$\tilde{U}$ tương ứng, thì
+\[
+  \norm{U - \tilde{U}}_F
+  \le \frac{4\norm{A - \tilde{A}}_F}
+           {\sigma_{n-1}(A) + \sigma_n(A) + \sigma_{n-1}(\tilde{A}) + \sigma_n(\tilde{A})}.
+\]
+\end{theorem}
+
+\subsection{Logarit ma trận (Matrix Logarithm)}
+
+\subsubsection{Định nghĩa và tính không đơn trị}
+
+Nếu $e^X = A$, thì $X$ là một \emph{logarit} của $A$. Do tính tuần hoàn của hàm mũ
+phức, $X + 2k\pi i$ cũng là logarit. Để khử mập mờ:
+
+\begin{definition}{Logarit chính (Principal Logarithm)}{principallog}
+Nếu $A \in \R^{n\times n}$ có mọi trị riêng thực đều dương, thì tồn tại duy nhất
+ma trận thực $X$ thỏa $e^X = A$ với $\lambda(X) \subset \{z \in \C: -\pi < \im(z) < \pi\}$.
+\end{definition}
+
+\subsubsection{Các khai triển chuỗi cho hàm log}
+
+\textbf{Chuỗi Maclaurin:}
+\[
+  \log(A) \approx M_q(A) = \sum_{k=1}^{q} \frac{(-1)^{k+1}(A-I)^k}{k},
+  \quad \rho(A-I) < 1.
+\]
+
+\textbf{Chuỗi Gregory:}
+\[
+  \log(A) \approx G_q(A) = -2\sum_{k=0}^{q} \frac{1}{2k+1}
+  \left[(I-A)(I+A)^{-1}\right]^{2k+1},
+  \quad \re(\lambda_i) > 0.
+\]
+
+\textbf{Xấp xỉ Padé chéo:} Ví dụ xấp xỉ $(3,3)$:
+\[
+  \log(A) \approx r_{33}(A) = D(A)^{-1} N(A),
+\]
+\[
+  D(A) = 60I + 90(A-I) + 36(A-I)^2 + 3(A-I)^3,
+\]
+\[
+  N(A) = 60(A-I) + 60(A-I)^2 + 11(A-I)^3.
+\]
+
+\subsubsection{Thuật toán Inverse Scaling and Squaring}
+
+\begin{algobox}
+\textbf{Thuật toán 1.4.1 (Inverse Scaling and Squaring cho $\log(A)$)}
+
+\medskip
+1. Lấy căn bậc hai lặp cho đến $\norm{A_k - I} \le \text{tol}$:
+\[
+   k = 0,\quad A_0 = A;\quad
+   \text{Khi } \norm{A-I} > \text{tol}: k \leftarrow k+1,\quad A_k = A_{k-1}^{1/2}.
+\]
+(Dùng lặp Denman-Beavers để tính căn bậc hai.)
+
+2. Tính $F \approx \log(A_k)$ bằng xấp xỉ Padé phù hợp.
+
+3. Hoàn nguyên: $\log(A) = 2^k F$.
+
+\medskip
+Đây là quá trình ngược của Scaling and Squaring cho hàm mũ.
+\end{algobox}
+
+% ------------------------------------------------------------------
+% PYTHON MINH HỌA – HÀM DẤU, CĂN BẬC HAI, LOGARIT
+% ------------------------------------------------------------------
+\subsection{Mã nguồn Python minh họa}
+
+Mã nguồn sau minh họa bốn thuật toán: (1) lặp Newton cho hàm dấu ma trận,
+(2) lặp Denman-Beavers cho căn bậc hai, (3) lặp Newton cho nhân tử trực giao
+(phân tích cực), và (4) thuật toán Inverse Scaling and Squaring cho logarit.
+
+\begin{lstlisting}[style=python, caption={Hàm dấu, căn bậc hai, phân tích cực và logarit ma trận -- lặp Newton và Denman-Beavers}]
+import numpy as np
+from scipy.linalg import sqrtm, logm, svd
+
+# -------------------------------------------------------
+# 1. Lặp Newton cho hàm dấu ma trận
+#    S_{k+1} = 0.5*(S_k + S_k^{-1})
+# -------------------------------------------------------
+def matrix_sign_newton(A, max_iter=50, tol=1e-14):
+    S = A.astype(complex).copy()
+    for k in range(max_iter):
+        S_inv = np.linalg.inv(S)
+        S_new = 0.5 * (S + S_inv)
+        residual = np.linalg.norm(S_new - S, 'fro')
+        if residual < tol:
+            print(f"  [sign] Hội tụ sau {k+1} vòng lặp, phần dư = {residual:.2e}")
+            return S_new
+        S = S_new
+    print(f"  [sign] Chưa hội tụ sau {max_iter} vòng lặp")
+    return S
+
+# -------------------------------------------------------
+# 2. Lặp Denman-Beavers cho căn bậc hai ma trận
+#    X_{k+1} = 0.5*(X_k + Y_k^{-1})
+#    Y_{k+1} = 0.5*(Y_k + X_k^{-1})
+# -------------------------------------------------------
+def matrix_sqrt_denman_beavers(A, max_iter=50, tol=1e-14):
+    X = A.astype(float).copy()
+    Y = np.eye(A.shape[0])
+    for k in range(max_iter):
+        X_inv = np.linalg.inv(X)
+        Y_inv = np.linalg.inv(Y)
+        X_new = 0.5 * (X + Y_inv)
+        Y_new = 0.5 * (Y + X_inv)
+        err = np.linalg.norm(X_new @ X_new - A, 'fro')
+        if err < tol:
+            print(f"  [sqrt] Hội tụ sau {k+1} vòng lặp, ||X^2-A||_F = {err:.2e}")
+            return X_new, Y_new
+        X, Y = X_new, Y_new
+    return X, Y
+
+# -------------------------------------------------------
+# 3. Phân tích cực: Newton lặp cho nhân tử trực giao
+#    X_{k+1} = 0.5*(X_k + X_k^{-T})
+# -------------------------------------------------------
+def polar_newton(A, max_iter=50, tol=1e-14):
+    X = A.astype(float).copy()
+    for k in range(max_iter):
+        X_invT = np.linalg.inv(X).T
+        X_new = 0.5 * (X + X_invT)
+        err = np.linalg.norm(X_new.T @ X_new - np.eye(A.shape[0]), 'fro')
+        if err < tol:
+            print(f"  [polar] Hội tụ sau {k+1} vòng lặp, ||U^T U - I||_F = {err:.2e}")
+            return X_new
+        X = X_new
+    return X
+
+# -------------------------------------------------------
+# 4. Logarit ma trận: Inverse Scaling and Squaring
+#    Dùng căn bậc hai lặp + Maclaurin cho log
+# -------------------------------------------------------
+def matrix_log_iss(A, tol_norm=0.5, q=20):
+    """Inverse Scaling and Squaring cho logm."""
+    Ak = A.astype(float).copy()
+    k  = 0
+    while np.linalg.norm(Ak - np.eye(Ak.shape[0]), 'fro') > tol_norm:
+        Ak, _ = matrix_sqrt_denman_beavers(Ak, tol=1e-13)
+        k += 1
+    # Tính log(Ak) bằng chuỗi Maclaurin (Ak gần I)
+    B   = Ak - np.eye(Ak.shape[0])
+    logA = np.zeros_like(B)
+    Bk   = np.eye(Ak.shape[0])
+    for j in range(1, q + 1):
+        Bk    = Bk @ B
+        logA += ((-1)**(j+1) / j) * Bk
+    return (2**k) * logA   # hoàn nguyên
+
+# -------------------------------------------------------
+# ỨNG DỤNG VÀ KIỂM TRA
+# -------------------------------------------------------
+A = np.array([[4.0, 3.0],
+              [1.0, 2.0]])
+
+print("Ma trận A:")
+print(A)
+
+# Hàm dấu
+S = matrix_sign_newton(A)
+print("\nHàm dấu sign(A):")
+print(S.real)
+
+# Căn bậc hai
+X_sqrt, _ = matrix_sqrt_denman_beavers(A)
+ref_sqrt   = sqrtm(A)
+print("\nCăn bậc hai A^{1/2} (Denman-Beavers):")
+print(X_sqrt)
+print(f"  Sai số so với sqrtm(scipy): {np.linalg.norm(X_sqrt - ref_sqrt, 'fro'):.2e}")
+
+# Phân tích cực
+U_polar = polar_newton(A)
+U_svd   = (lambda U,_,Vt: U @ Vt)(*svd(A, full_matrices=False))
+print("\nNhân tử trực giao U (phân tích cực, Newton):")
+print(U_polar)
+print(f"  Sai số so với SVD: {np.linalg.norm(U_polar - U_svd, 'fro'):.2e}")
+
+# Logarit
+L = matrix_log_iss(A, tol_norm=0.5, q=30)
+ref_log = logm(A)
+print("\nLogarit chính log(A) (Inverse Scaling and Squaring):")
+print(L)
+print(f"  Sai số so với logm(scipy): {np.linalg.norm(L - ref_log, 'fro'):.2e}")
+print(f"  Kiểm tra: ||e^L - A||_F = "
+      f"{np.linalg.norm(np.linalg.matrix_power(np.eye(2), 0) + L - A, 'fro'):.2e}")
+\end{lstlisting}
+
+% ============================================================
+% CHƯƠNG 2: TRIỂN KHAI THỰC NGHIỆM
+% ============================================================
+\chapter{Triển khai thực nghiệm}
+
+Chương này trình bày các thực nghiệm tính toán cụ thể, đánh giá định lượng hiệu năng
+và độ chính xác của các phương pháp đã trình bày ở Chương~1. Tất cả thực nghiệm được
+thực hiện bằng Python~3.10 với các thư viện NumPy~1.25 và SciPy~1.11 trên môi trường
+chuẩn IEEE 754 double precision ($u \approx 2.22 \times 10^{-16}$).
+
+\section{Môi trường và thiết lập thực nghiệm}
+
+\subsection{Yêu cầu thư viện}
+
+Toàn bộ mã thực nghiệm sử dụng các thư viện Python phổ biến, dễ dàng cài đặt:
+
+\begin{lstlisting}[style=python, caption={Thiết lập môi trường thực nghiệm}]
+# Cài đặt thư viện (nếu chưa có)
+# pip install numpy scipy matplotlib
+
+import numpy as np
+from scipy.linalg import (expm, logm, sqrtm,
+                           schur, svd, norm)
+import time
+
+# Thiết lập random seed để tái hiện kết quả
+np.random.seed(42)
+
+# Epsilon máy
+u = np.finfo(float).eps
+print(f"Epsilon máy u = {u:.3e}")
+print(f"Phiên bản NumPy: {np.__version__}")
+
+# Hàm tạo ma trận ngẫu nhiên với số điều kiện cho trước
+def random_matrix_cond(n, kappa):
+    """Tạo ma trận ngẫu nhiên n x n với condition number xấp xỉ kappa."""
+    U, _ = np.linalg.qr(np.random.randn(n, n))
+    V, _ = np.linalg.qr(np.random.randn(n, n))
+    s = np.logspace(0, -np.log10(kappa), n)
+    return U @ np.diag(s) @ V.T
+
+# Hàm đo sai số tương đối Frobenius
+def rel_err(F_approx, F_exact):
+    denom = norm(F_exact, 'fro')
+    return norm(F_approx - F_exact, 'fro') / denom if denom > 0 else float('inf')
+\end{lstlisting}
+
+\subsection{Các ma trận thử nghiệm chuẩn}
+
+Để đánh giá toàn diện, chúng ta dùng bốn lớp ma trận thử nghiệm đại diện cho
+các trường hợp khó khác nhau trong thực tế.
+
+\begin{lstlisting}[style=python, caption={Định nghĩa các ma trận thử nghiệm}]
+def test_matrices():
+    """Trả về dict các ma trận thử nghiệm chuẩn."""
+    mats = {}
+
+    # 1. Ma trận chéo hóa được, điều kiện tốt
+    mats['diagonal'] = np.diag([1.0, 2.0, 3.0, 4.0])
+
+    # 2. Ma trận đối xứng xác định dương (SPD)
+    B = np.random.randn(4, 4)
+    mats['SPD'] = B.T @ B + 4 * np.eye(4)
+
+    # 3. Ma trận có trị riêng phức (xoay)
+    theta = np.pi / 4
+    mats['rotation'] = np.array([
+        [ np.cos(theta), -np.sin(theta), 0, 0],
+        [ np.sin(theta),  np.cos(theta), 0, 0],
+        [0, 0,  np.cos(theta), -np.sin(theta)],
+        [0, 0,  np.sin(theta),  np.cos(theta)]
+    ])
+
+    # 4. Ma trận không chính tắc (non-normal) - khá khó
+    mats['non_normal'] = np.array([
+        [-1.0, 500.0, 0.0, 0.0],
+        [ 0.0,  -1.0, 500.0, 0.0],
+        [ 0.0,   0.0, -1.0, 500.0],
+        [ 0.0,   0.0,  0.0, -1.0]
+    ])
+
+    # 5. Ma trận trị riêng lặp (Jordan block 4x4)
+    lam = 2.0
+    mats['jordan'] = lam * np.eye(4) + np.diag([1, 1, 1], k=1)
+
+    return mats
+
+MATS = test_matrices()
+for name, M in MATS.items():
+    kappa = np.linalg.cond(M)
+    eigvals = np.linalg.eigvals(M)
+    print(f"  {name:15s}: kích thước={M.shape}, "
+          f"kappa={kappa:.2e}, "
+          f"trị riêng ~ {np.round(eigvals, 2)}")
+\end{lstlisting}
+
+\section{Thực nghiệm 1: Phương pháp trị riêng và Schur-Parlett}
+
+Thực nghiệm này so sánh ba phương pháp tính $e^A$: phân tích trị riêng (eigenvector),
+Schur-Parlett, và SciPy chuẩn. Chúng ta đo sai số tương đối Frobenius và thời gian chạy.
+
+\begin{lstlisting}[style=python, caption={Thực nghiệm 1: so sánh phương pháp trị riêng vs Schur-Parlett}]
+import numpy as np
+from scipy.linalg import expm, schur
+import time
+
+def expm_eigenvector(A):
+    """Tính e^A qua phân tích trị riêng."""
+    lam, X = np.linalg.eig(A)
+    return X @ np.diag(np.exp(lam)) @ np.linalg.inv(X)
+
+def expm_schur_parlett(A):
+    """
+    Tính e^A qua Schur-Parlett (đơn giản hóa cho trị riêng phân biệt).
+    A = Q T Q^H  =>  e^A = Q e^T Q^H
+    """
+    T, Q = schur(A, output='complex')
+    n    = T.shape[0]
+    F    = np.zeros_like(T, dtype=complex)
+    lam  = np.diag(T)
+
+    # Khởi tạo đường chéo
+    for i in range(n):
+        F[i, i] = np.exp(lam[i])
+
+    # Tính các siêu đường chéo theo thứ tự p = 1, 2, ..., n-1
+    for p in range(1, n):
+        for i in range(n - p):
+            j = i + p
+            dl = lam[j] - lam[i]
+            if abs(dl) > 1e-10:
+                # Sai phân chia bậc 1
+                Fij = T[i, j] * (F[j, j] - F[i, i]) / dl
+            else:
+                # Giới hạn: f'(lambda) khi trị riêng trùng nhau
+                Fij = T[i, j] * np.exp(lam[i])
+            # Đóng góp từ các phần tử trung gian
+            for k in range(i + 1, j):
+                dlk = lam[j] - lam[k]
+                dki = lam[k] - lam[i]
+                if abs(dlk) > 1e-10 and abs(dki) > 1e-10:
+                    Fij += (T[i, k] * F[k, j] - F[i, k] * T[k, j]) / dl
+            F[i, j] = Fij
+
+    return (Q @ F @ Q.conj().T).real
+
+# -------------------------------------------------------
+# Chạy thử nghiệm trên các ma trận chuẩn
+# -------------------------------------------------------
+print(f"{'Ma trận':15s} | {'Sai số Eig':10s} | {'Sai số Schur':10s} "
+      f"| {'t_eig (ms)':11s} | {'t_schur (ms)':12s}")
+print("-" * 68)
+
+for name, A in MATS.items():
+    ref = expm(A)
+
+    t0 = time.perf_counter()
+    F_eig = expm_eigenvector(A).real
+    t_eig = (time.perf_counter() - t0) * 1000
+
+    t0 = time.perf_counter()
+    F_sch = expm_schur_parlett(A)
+    t_sch = (time.perf_counter() - t0) * 1000
+
+    e_eig = rel_err(F_eig, ref)
+    e_sch = rel_err(F_sch, ref)
+
+    print(f"{name:15s} | {e_eig:10.2e} | {e_sch:10.2e} "
+          f"| {t_eig:11.3f} | {t_sch:12.3f}")
+\end{lstlisting}
+
+\section{Thực nghiệm 2: Phương pháp xấp xỉ -- Taylor và ảnh hưởng của hủy số}
+
+Thực nghiệm này khảo sát kỹ lưỡng hiện tượng catastrophic cancellation trong
+xấp xỉ Taylor, và minh họa tại sao bậc xấp xỉ cao hơn không luôn tốt hơn.
+
+\begin{lstlisting}[style=python, caption={Thực nghiệm 2: hiện tượng hủy số trong Taylor và vai trò của scaling}]
+import numpy as np
+from scipy.linalg import expm
+
+def expm_taylor(A, q):
+    n = A.shape[0]
+    F = np.eye(n); Ak = np.eye(n); fact = 1.0
+    for k in range(1, q + 1):
+        Ak = Ak @ A; fact *= k; F += Ak / fact
+    return F
+
+def expm_taylor_scaled(A, q, j=None):
+    """Taylor với scaling: tính e^{A/2^j} rồi bình phương j lần."""
+    norm_A = np.max(np.sum(np.abs(A), axis=1))
+    if j is None:
+        j = max(0, int(np.ceil(np.log2(norm_A))))
+    As = A / (2 ** j)
+    F = expm_taylor(As, q)
+    for _ in range(j): F = F @ F
+    return F
+
+# Ma trận gây hủy số nhất
+A_bad = np.array([[-49.0, 24.0],
+                  [-64.0, 31.0]])
+ref = expm(A_bad)
+
+print("Hiện tượng hủy số với A = [[-49,24],[-64,31]]")
+print(f"  Kết quả chính xác: \n{ref}\n")
+
+print(f"  {'Bậc q':6s} | {'Taylor thuần (err)':20s} | {'Taylor + Scaling (err)':22s}")
+print("  " + "-"*55)
+for q in [5, 10, 15, 20, 30, 50, 59]:
+    F_naive  = expm_taylor(A_bad, q)
+    F_scaled = expm_taylor_scaled(A_bad, q)
+    e_naive  = rel_err(F_naive,  ref)
+    e_scaled = rel_err(F_scaled, ref)
+    print(f"  {q:6d} | {e_naive:20.4e} | {e_scaled:22.4e}")
+
+# Theo dõi giá trị lớn nhất của các số hạng trung gian
+print("\nGiá trị lớn nhất của các số hạng Ak/k! (A_bad):")
+n = A_bad.shape[0]
+Ak = np.eye(n); fact = 1.0
+for k in range(1, 21):
+    Ak = Ak @ A_bad; fact *= k
+    term_max = np.max(np.abs(Ak / fact))
+    if k <= 5 or k % 5 == 0:
+        print(f"  k={k:2d}: max|A^k / k!| = {term_max:.3e}")
+\end{lstlisting}
+
+\section{Thực nghiệm 3: Scaling and Squaring -- phân tích hiệu năng theo kích thước}
+
+Thực nghiệm này đo thời gian chạy và độ chính xác của thuật toán Scaling and Squaring
+(SciPy expm) so với phương pháp trị riêng thuần túy khi kích thước ma trận $n$ tăng.
+
+\begin{lstlisting}[style=python, caption={Thực nghiệm 3: hiệu năng Scaling and Squaring theo kích thước n}]
+import numpy as np
+from scipy.linalg import expm
+import time
+
+def expm_eigenvector_general(A):
+    lam, X = np.linalg.eig(A)
+    return (X @ np.diag(np.exp(lam)) @ np.linalg.inv(X)).real
+
+sizes = [4, 8, 16, 32, 64, 128, 256]
+n_repeat = 5   # số lần lặp để lấy trung bình
+
+print(f"{'n':>6} | {'t_eig (ms)':>12} | {'t_expm (ms)':>12} "
+      f"| {'Tăng tốc':>8} | {'sai số eig':>10}")
+print("-" * 60)
+
+for n in sizes:
+    # Tạo ma trận ngẫu nhiên xác định dương (luôn có e^A xác định)
+    B = np.random.randn(n, n)
+    A = (B + B.T) / 2 - n * np.eye(n)   # đối xứng, âm định
+
+    ref = expm(A)
+
+    # Đo thời gian expm (SciPy -- Padé + Scaling&Squaring)
+    t_expm_list = []
+    for _ in range(n_repeat):
+        t0 = time.perf_counter()
+        F_expm = expm(A)
+        t_expm_list.append((time.perf_counter() - t0) * 1000)
+    t_expm = np.median(t_expm_list)
+
+    # Đo thời gian phương pháp trị riêng (chỉ khả thi khi n nhỏ)
+    if n <= 64:
+        t_eig_list = []
+        for _ in range(n_repeat):
+            t0 = time.perf_counter()
+            F_eig = expm_eigenvector_general(A)
+            t_eig_list.append((time.perf_counter() - t0) * 1000)
+        t_eig   = np.median(t_eig_list)
+        err_eig = rel_err(F_eig, ref)
+        speedup = t_eig / t_expm
+        print(f"{n:>6} | {t_eig:>12.3f} | {t_expm:>12.3f} "
+              f"| {speedup:>8.2f}x | {err_eig:>10.2e}")
+    else:
+        print(f"{n:>6} | {'N/A (quá lớn)':>12} | {t_expm:>12.3f} "
+              f"| {'---':>8} | {'---':>10}")
+\end{lstlisting}
+
+\section{Thực nghiệm 4: Hàm dấu, căn bậc hai và logarit -- hội tụ và độ chính xác}
+
+Thực nghiệm cuối cùng phân tích chi tiết tốc độ hội tụ của lặp Newton và
+Denman-Beavers, đồng thời so sánh kết quả với hàm chuẩn SciPy.
+
+\begin{lstlisting}[style=python, caption={Thực nghiệm 4: hội tụ bậc hai của lặp Newton và Denman-Beavers}]
+import numpy as np
+from scipy.linalg import sqrtm, logm, expm
+
+# Cài đặt lại các hàm lặp với theo dõi hội tụ
+def matrix_sign_newton_track(A, max_iter=30, tol=1e-14):
+    S = A.astype(complex).copy()
+    residuals = []
+    for k in range(max_iter):
+        S_new = 0.5 * (S + np.linalg.inv(S))
+        res   = np.linalg.norm(S_new @ S_new - np.eye(S.shape[0]), 'fro')
+        residuals.append(res)
+        if res < tol: S = S_new; break
+        S = S_new
+    return S, residuals
+
+def matrix_sqrt_db_track(A, max_iter=30, tol=1e-14):
+    X = A.astype(float).copy()
+    Y = np.eye(A.shape[0])
+    residuals = []
+    for k in range(max_iter):
+        X_inv = np.linalg.inv(X)
+        Y_inv = np.linalg.inv(Y)
+        X_new = 0.5 * (X + Y_inv)
+        Y_new = 0.5 * (Y + X_inv)
+        res   = np.linalg.norm(X_new @ X_new - A, 'fro')
+        residuals.append(res)
+        if res < tol: X, Y = X_new, Y_new; break
+        X, Y = X_new, Y_new
+    return X, Y, residuals
+
+# -------------------------------------------------------
+# Ma trận thử nghiệm: SPD, để kiểm chứng
+# -------------------------------------------------------
+B = np.array([[4.0, 2.0, 1.0],
+              [2.0, 5.0, 3.0],
+              [1.0, 3.0, 6.0]])
+
+print("=" * 55)
+print("MA TRẬN B =")
+print(B)
+print(f"Trị riêng: {np.linalg.eigvals(B).real}")
+
+# Thí nghiệm: Hàm dấu sign(B)
+print("\n--- Hàm dấu ma trận (Newton) ---")
+S_B, res_sign = matrix_sign_newton_track(B)
+ref_sign = np.diag(np.sign(np.linalg.eigvals(B).real))
+# Lưu ý: sign(B) phụ thuộc vào trị riêng thực (đều dương => sign = I)
+print(f"  sign(B) (trị riêng đều dương, nên sign(B) = I):")
+print(f"  {np.diag(S_B.real)}")
+print("  Phần dư ||S^2 - I||_F theo vòng lặp:")
+for k, r in enumerate(res_sign):
+    print(f"    Vòng {k+1}: {r:.4e}")
+
+# Thí nghiệm: Căn bậc hai Denman-Beavers
+print("\n--- Căn bậc hai ma trận (Denman-Beavers) ---")
+X_sqrt, _, res_sqrt = matrix_sqrt_db_track(B)
+ref_sqrt = sqrtm(B)
+err_sqrt = np.linalg.norm(X_sqrt - ref_sqrt, 'fro') / np.linalg.norm(ref_sqrt, 'fro')
+print(f"  Sai số so với sqrtm(scipy): {err_sqrt:.2e}")
+print("  Phần dư ||X^2 - B||_F theo vòng lặp:")
+for k, r in enumerate(res_sqrt):
+    print(f"    Vòng {k+1}: {r:.4e}")
+
+# Thí nghiệm: Logarit -- kiểm chứng e^{logm(B)} = B
+print("\n--- Logarit ma trận (SciPy logm) ---")
+L_B   = logm(B)
+check = expm(L_B)
+err_log = np.linalg.norm(check - B, 'fro') / np.linalg.norm(B, 'fro')
+print(f"  Sai số ||e^{{logm(B)}} - B||_F / ||B||_F = {err_log:.2e}")
+
+# -------------------------------------------------------
+# Thí nghiệm phân tích cực với SVD đối chiếu
+# -------------------------------------------------------
+print("\n--- Phân tích cực A = U P ---")
+A_rect = np.array([[1.0, 2.0, 0.0],
+                   [0.0, 3.0, 4.0],
+                   [5.0, 0.0, 1.0]])
+Ua, Sa, Vat = np.linalg.svd(A_rect)
+U_polar_ref = Ua @ Vat          # nhân tử trực giao từ SVD
+P_polar_ref = Vat.T @ np.diag(Sa) @ Vat   # nhân tử xác định dương
+
+# Newton lặp cho nhân tử trực giao
+X = A_rect.copy()
+for k in range(30):
+    X_new = 0.5 * (X + np.linalg.inv(X).T)
+    if np.linalg.norm(X_new - X, 'fro') < 1e-14: break
+    X = X_new
+U_newton = X
+
+err_polar = np.linalg.norm(U_newton - U_polar_ref, 'fro')
+print(f"  ||U_Newton - U_SVD||_F = {err_polar:.2e}")
+print(f"  Kiểm tra trực giao: ||U^T U - I||_F = "
+      f"{np.linalg.norm(U_newton.T @ U_newton - np.eye(3), 'fro'):.2e}")
+print(f"  Kiểm tra phân tích: ||A - UP||_F = "
+      f"{np.linalg.norm(A_rect - U_newton @ P_polar_ref, 'fro'):.2e}")
+\end{lstlisting}
+
+\section{Tổng hợp và nhận xét kết quả}
+
+Dựa trên bốn thực nghiệm trên, ta có thể đưa ra một số nhận xét tổng hợp.
+
+\subsection{So sánh tổng quan các phương pháp}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Phương pháp} & \textbf{Độ chính xác} & \textbf{Ổn định số} & \textbf{Chi phí} & \textbf{Phù hợp khi} \\
+\midrule
+Trị riêng (eigenvector) & Phụ thuộc $\kappa_2(X)$ & Kém nếu $X$ ill-cond & $O(n^3)$ & $A$ chính tắc \\
+Schur-Parlett           & Cao                    & Tốt                  & $O(n^3)$ & $n$ nhỏ-vừa \\
+Taylor cắt cụt          & Bị hủy số              & Kém                  & $O(qn^3)$ & Chỉ để minh họa \\
+Taylor + Scaling        & Tốt                    & Khá                  & $O(qn^3)$ & $\norm{A}$ lớn \\
+Padé + Scal. \& Sq.    & Cao                    & Rất tốt              & $O(n^3)$ & Mục đích chung \\
+Newton sign             & Bậc hai                & Tốt                  & $O(kn^3)$ & Hàm dấu, căn \\
+Denman-Beavers          & Bậc hai                & Tốt hơn Newton       & $O(kn^3)$ & Căn bậc hai \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\subsection{Khuyến nghị thực tế}
+
+\begin{importantbox}
+\textbf{Khuyến nghị thực hành:}
+\begin{enumerate}
+  \item \textbf{Hàm mũ $e^A$:} Luôn dùng \texttt{scipy.linalg.expm}
+    (Padé bậc 13 + Scaling and Squaring) trong thực tế. Chỉ tự cài đặt
+    khi nghiên cứu hoặc yêu cầu đặc biệt về hiệu năng.
+
+  \item \textbf{Logarit $\log(A)$:} Dùng \texttt{scipy.linalg.logm}
+    (Inverse Scaling and Squaring). Cẩn thận khi $A$ có trị riêng âm hoặc
+    phức (vấn đề chọn nhánh logarit).
+
+  \item \textbf{Căn bậc hai $A^{1/2}$:} \texttt{scipy.linalg.sqrtm} cho kết quả
+    tốt. Lặp Denman-Beavers hữu ích khi cần kiểm soát trực tiếp quá trình hội tụ.
+
+  \item \textbf{Ma trận lớn ($n \gg 1000$):} Chuyển sang phương pháp Krylov
+    (ví dụ: Expokit, Expmv) thay vì các phương pháp dense.
+
+  \item \textbf{Kiểm tra điều kiện:} Trước khi tính bất kỳ hàm ma trận nào,
+    nên kiểm tra số điều kiện $\kappa_2(A)$ và hoành độ phổ $\alpha(A)$ để dự
+    báo độ chính xác kết quả.
+\end{enumerate}
+\end{importantbox}
+
+\subsection{Tổng kết}
+
+Qua lý thuyết ở Chương~1 và thực nghiệm ở Chương~2, ta thấy rõ rằng không có
+một phương pháp duy nhất nào tối ưu cho mọi trường hợp. Sự lựa chọn phụ thuộc
+vào cấu trúc ma trận (chính tắc hay không, điều kiện tốt hay xấu, kích thước),
+hàm cần tính ($e^A$, $\log A$, $A^{1/2}$, $\sign(A)$), và yêu cầu về độ chính xác
+và tốc độ. Tuy nhiên, các phương pháp dựa trên phân tích Schur và xấp xỉ Padé
+với Scaling and Squaring nổi bật là lựa chọn ổn định và hiệu quả nhất cho mục
+đích tổng quát, và đây cũng là nền tảng của các thư viện số hiện đại như MATLAB,
+SciPy và Julia.
+
+\end{document}
