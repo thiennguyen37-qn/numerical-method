@@ -676,58 +676,58 @@ import numpy as np
 from scipy.linalg import expm, schur
 
 # -------------------------------------------------------
-# 1. Ma trận ví dụ: có số điều kiện cao
+# 1. Ma tran vi du: co so dieu kien cao
 # -------------------------------------------------------
 eps = 1e-5
 A = np.array([[1 + eps, 1.0],
               [0.0,     1 - eps]], dtype=float)
 
 # -------------------------------------------------------
-# 2. Phương pháp 1: Phân tích trị riêng (eigenvector)
+# 2. Phuong phap 1: Phan tich tri rieng (eigenvector)
 # -------------------------------------------------------
 eigenvalues, X = np.linalg.eig(A)
-kappa = np.linalg.cond(X)               # số điều kiện của X
-f_eig = np.exp(eigenvalues)             # áp dụng f = exp lên trị riêng
+kappa = np.linalg.cond(X)               # so dieu kien cua X
+f_eig = np.exp(eigenvalues)             # ap dung f = exp len tri rieng
 fA_eig = X @ np.diag(f_eig) @ np.linalg.inv(X)
 
 # -------------------------------------------------------
-# 3. Phương pháp 2: Phân tích Schur + công thức phần tử
+# 3. Phuong phap 2: Phan tich Schur + cong thuc phan tu
 # -------------------------------------------------------
 T, Q = schur(A, output='complex')       # A = Q T Q^H
-# Tính f(T) cho ma trận tam giác trên 2x2
+# Tinh f(T) cho ma tran tam giac tren 2x2
 fT = np.zeros_like(T)
 lam = np.diag(T)
 fT[0, 0] = np.exp(lam[0])
 fT[1, 1] = np.exp(lam[1])
-# Sai phân chia bậc 1 cho phần tử (0,1)
+# Sai phan chia bac 1 cho phan tu (0,1)
 if abs(lam[1] - lam[0]) > 1e-14:
     fT[0, 1] = T[0, 1] * (fT[1, 1] - fT[0, 0]) / (lam[1] - lam[0])
 else:
-    fT[0, 1] = T[0, 1] * np.exp(lam[0])   # giới hạn khi lambda trùng nhau
+    fT[0, 1] = T[0, 1] * np.exp(lam[0])   # gioi han khi lambda trung nhau
 fA_schur = Q @ fT @ Q.conj().T
 
 # -------------------------------------------------------
-# 4. Phương pháp 3: SciPy expm (Padé + thu nhỏ và bình phương)
+# 4. Phuong phap 3: SciPy expm (Pade + thu nho va binh phuong)
 # -------------------------------------------------------
 fA_scipy = expm(A)
 
 # -------------------------------------------------------
-# 5. So sánh kết quả
+# 5. So sanh ket qua
 # -------------------------------------------------------
 print("="*55)
-print(f"  Số điều kiện của ma trận vector riêng: kappa = {kappa:.2e}")
+print(f"  So dieu kien cua ma tran vector rieng: kappa = {kappa:.2e}")
 print("="*55)
-print("\nKết quả qua phân tích trị riêng (eigenvector):")
+print("\nKet qua qua phan tich tri rieng (eigenvector):")
 print(fA_eig.real)
-print("\nKết quả qua Schur-Parlett (đơn giản hóa):")
+print("\nKet qua qua Schur-Parlett (don gian hoa):")
 print(fA_schur.real)
-print("\nKết quả SciPy expm (chuẩn xác):")
+print("\nKet qua SciPy expm (chuan xac):")
 print(fA_scipy)
 
 err_eig    = np.linalg.norm(fA_eig.real - fA_scipy, 'fro')
 err_schur  = np.linalg.norm(fA_schur.real - fA_scipy, 'fro')
-print(f"\nSai số Frobenius (eigenvector vs scipy): {err_eig:.2e}")
-print(f"Sai số Frobenius (Schur      vs scipy): {err_schur:.2e}")
+print(f"\nSai so Frobenius (eigenvector vs scipy): {err_eig:.2e}")
+print(f"Sai so Frobenius (Schur      vs scipy): {err_schur:.2e}")
 \end{lstlisting}
 
 % ============================================================
@@ -877,12 +877,12 @@ import numpy as np
 from scipy.linalg import expm
 
 # -------------------------------------------------------
-# Hàm tính e^A bằng chuỗi Taylor cắt cụt bậc q
+# Ham tinh e^A bang chuoi Taylor cat cut bac q
 # -------------------------------------------------------
 def expm_taylor(A, q):
-    """Xấp xỉ e^A bằng tổng Taylor bậc q."""
+    """Xap xi e^A bang tong Taylor bac q."""
     n = A.shape[0]
-    F    = np.eye(n)          # số hạng k=0
+    F    = np.eye(n)          # so hang k=0
     Ak   = np.eye(n)          # A^k
     fact = 1.0
     for k in range(1, q + 1):
@@ -891,12 +891,12 @@ def expm_taylor(A, q):
         F   += Ak / fact
     return F
 
-# Hàm tính đa thức ma trận p(A) bằng lược đồ Horner
+# Ham tinh da thuc ma tran p(A) bang luoc do Horner
 def horner(A, coeffs):
     """
-    Tính p(A) = coeffs[0]*I + coeffs[1]*A + ... + coeffs[q]*A^q
-    dùng lược đồ Horner.
-    coeffs[0] là hệ số tự do, coeffs[-1] là hệ số bậc cao nhất.
+    Tinh p(A) = coeffs[0]*I + coeffs[1]*A + ... + coeffs[q]*A^q
+    dung luoc do Horner.
+    coeffs[0] la he so tu do, coeffs[-1] la he so bac cao nhat.
     """
     n = A.shape[0]
     q = len(coeffs) - 1
@@ -906,35 +906,35 @@ def horner(A, coeffs):
     return F
 
 # -------------------------------------------------------
-# Ví dụ 1: Ma trận hiền lành
-# A có trị riêng âm (ổn định, hàm mũ giảm)
+# Vi du 1: Ma tran hien lanh
+# A co tri rieng am (on dinh, ham mu giam)
 # -------------------------------------------------------
 A_ok = np.array([[1.0, 2.0],
                  [0.0, 3.0]])
 ref  = expm(A_ok)
 
-print("Ví dụ 1 -- Ma trận bình thường A = [[1,2],[0,3]]")
-print(f"  Kết quả chuẩn xác (SciPy): \n{ref}\n")
+print("Vi du 1 -- Ma tran binh thuong A = [[1,2],[0,3]]")
+print(f"  Ket qua chuan xac (SciPy): \n{ref}\n")
 for q in [5, 10, 20, 30]:
     approx = expm_taylor(A_ok, q)
     err = np.linalg.norm(approx - ref, 'fro')
-    print(f"  q={q:2d}  ||Taylor - chính xác||_F = {err:.2e}")
+    print(f"  q={q:2d}  ||Taylor - chinh xac||_F = {err:.2e}")
 
 # -------------------------------------------------------
-# Ví dụ 2: Ma trận "ngổ ngáo" -- hủy số nghiêm trọng
-# A có trị riêng 1 và -17 (phổ lớn)
+# Vi du 2: Ma tran "ngo ngao" -- huy so nghiem trong
+# A co tri rieng 1 va -17 (pho lon)
 # -------------------------------------------------------
 A_bad = np.array([[-49.0, 24.0],
                   [-64.0, 31.0]])
 ref_bad = expm(A_bad)
 
-print("\nVí dụ 2 -- Ma trận gây hủy số A = [[-49,24],[-64,31]]")
-print(f"  Kết quả chuẩn xác:\n{ref_bad}\n")
-print("  Bậc q  ||Taylor - chính xác||_F   Max|phần tử trung gian|")
+print("\nVi du 2 -- Ma tran gay huy so A = [[-49,24],[-64,31]]")
+print(f"  Ket qua chuan xac:\n{ref_bad}\n")
+print("  Bac q  ||Taylor - chinh xac||_F   Max|phan tu trung gian|")
 for q in [10, 20, 40, 59]:
     approx = expm_taylor(A_bad, q)
     err = np.linalg.norm(approx - ref_bad, 'fro')
-    # Tính giá trị lớn nhất của tổng trung gian (theo dõi hủy số)
+    # Tinh gia tri lon nhat cua tong trung gian (theo doi huy so)
     n = A_bad.shape[0]
     Ak = np.eye(n); fact = 1.0; max_elem = 0.0
     for k in range(1, q + 1):
@@ -943,18 +943,18 @@ for q in [10, 20, 40, 59]:
     print(f"  q={q:3d}  {err:.2e}                  {max_elem:.2e}")
 
 # -------------------------------------------------------
-# Ví dụ 3: Lược đồ Horner cho đa thức ma trận
-# p(x) = 1 + x + x^2/2 + x^3/6 (Taylor bậc 3 của e^x)
+# Vi du 3: Luoc do Horner cho da thuc ma tran
+# p(x) = 1 + x + x^2/2 + x^3/6 (Taylor bac 3 cua e^x)
 # -------------------------------------------------------
 A_small = np.array([[0.1, 0.2],
                     [0.0, 0.3]])
-coeffs = [1.0, 1.0, 0.5, 1/6]   # hệ số [b0, b1, b2, b3]
+coeffs = [1.0, 1.0, 0.5, 1/6]   # he so [b0, b1, b2, b3]
 p_horner = horner(A_small, coeffs)
 p_direct = (np.eye(2) + A_small
             + A_small @ A_small / 2
             + A_small @ A_small @ A_small / 6)
-print("\nVí dụ 3 -- Kiểm tra Horner vs tính trực tiếp:")
-print(f"  ||Horner - tính trực tiếp||_F = {np.linalg.norm(p_horner - p_direct):.2e}")
+print("\nVi du 3 -- Kiem tra Horner vs tinh truc tiep:")
+print(f"  ||Horner - tinh truc tiep||_F = {np.linalg.norm(p_horner - p_direct):.2e}")
 \end{lstlisting}
 
 % ============================================================
@@ -1113,22 +1113,22 @@ from scipy.linalg import expm
 from math import factorial
 
 # -------------------------------------------------------
-# Xấp xỉ Padé (p,p) cho hàm mũ
+# Xap xi Pade (p,p) cho ham mu
 # -------------------------------------------------------
 def pade_coeff(p):
-    """Trả về hệ số của N_pp(z) và D_pp(z)."""
+    """Tra ve he so cua N_pp(z) va D_pp(z)."""
     c = np.zeros(p + 1)
     for k in range(p + 1):
         c[k] = (factorial(p + p - k) * factorial(p)
                 / (factorial(p + p) * factorial(k) * factorial(p - k)))
     # N_pp(z) = sum c[k] z^k
-    # D_pp(z) = sum c[k] (-z)^k  =>  hệ số: c[k]*(-1)^k
+    # D_pp(z) = sum c[k] (-z)^k  =>  he so: c[k]*(-1)^k
     N_coeffs = c.copy()
     D_coeffs = c * np.array([(-1)**k for k in range(p + 1)])
     return N_coeffs, D_coeffs
 
 def poly_matrix(A, coeffs):
-    """Tính đa thức ma trận bằng Horner: tổng theo k của coeffs[k] A^k."""
+    """Tinh da thuc ma tran bang Horner: tong theo k cua coeffs[k] A^k."""
     n = A.shape[0]
     q = len(coeffs) - 1
     F = coeffs[q] * np.eye(n)
@@ -1138,27 +1138,27 @@ def poly_matrix(A, coeffs):
 
 def expm_scaling_squaring(A, p=6):
     """
-    Scaling and Squaring với xấp xỉ Padé bậc (p,p).
-    - Thu nhỏ: chọn j sao cho ||A/2^j||_inf <= 0.5
-    - Tính Padé: R = D^{-1} N
-    - Bình phương j lần
+    Scaling and Squaring voi xap xi Pade bac (p,p).
+    - Thu nho: chon j sao cho ||A/2^j||_inf <= 0.5
+    - Tinh Pade: R = D^{-1} N
+    - Binh phuong j lan
     """
     A = np.array(A, dtype=float)
     norm_inf = np.max(np.sum(np.abs(A), axis=1))
     j = max(0, int(np.ceil(np.log2(norm_inf / 0.5)))) if norm_inf > 0.5 else 0
-    As = A / (2 ** j)                      # thu nhỏ
+    As = A / (2 ** j)                      # thu nho
 
     N_c, D_c = pade_coeff(p)
     N = poly_matrix(As, N_c)
     D = poly_matrix(As, D_c)
     F = np.linalg.solve(D, N)              # F = D^{-1} N
 
-    for _ in range(j):                     # bình phương j lần
+    for _ in range(j):                     # binh phuong j lan
         F = F @ F
     return F
 
 # -------------------------------------------------------
-# So sánh với SciPy expm
+# So sanh voi SciPy expm
 # -------------------------------------------------------
 A_test = np.array([[2.0, 1.0, 0.0],
                    [0.0, -1.0, 3.0],
@@ -1166,13 +1166,13 @@ A_test = np.array([[2.0, 1.0, 0.0],
 F_mine  = expm_scaling_squaring(A_test, p=6)
 F_scipy = expm(A_test)
 err = np.linalg.norm(F_mine - F_scipy, 'fro')
-print("So sánh Scaling-Squaring (Padé p=6) vs SciPy expm:")
+print("So sanh Scaling-Squaring (Pade p=6) vs SciPy expm:")
 print(f"  ||F_mine - F_scipy||_F = {err:.2e}")
 
 # -------------------------------------------------------
-# Hiện tượng tăng trưởng quá độ
-# A = [[-1, 1000],[0, -1]], trị riêng đều = -1 (âm)
-# nhưng ||e^At||_2 tăng mạnh trước khi giảm
+# Hien tuong tang truong qua do
+# A = [[-1, 1000],[0, -1]], tri rieng deu = -1 (am)
+# nhung ||e^At||_2 tang manh truoc khi giam
 # -------------------------------------------------------
 A_nt = np.array([[-1.0, 1000.0],
                  [ 0.0,   -1.0]])
@@ -1184,17 +1184,17 @@ for t in t_vals:
     norms.append(np.linalg.norm(eAt, 2))
 
 idx_max = np.argmax(norms)
-print("\nHiện tượng tăng trưởng quá độ với A = [[-1,1000],[0,-1]]:")
-print(f"  Giá trị lớn nhất của ||e^At||_2 = {norms[idx_max]:.1f}")
-print(f"  Đạt tại t = {t_vals[idx_max]:.3f}")
-print(f"  (dù rằng alpha(A) = -1 < 0 nên e^At phải giảm trong dài hạn)")
+print("\nHien tuong tang truong qua do voi A = [[-1,1000],[0,-1]]:")
+print(f"  Gia tri lon nhat cua ||e^At||_2 = {norms[idx_max]:.1f}")
+print(f"  Dat tai t = {t_vals[idx_max]:.3f}")
+print(f"  (du rang alpha(A) = -1 < 0 nen e^At phai giam trong dai han)")
 
-# Kiểm chứng bằng công thức giải tích
+# Kiem chung bang cong thuc giai tich
 # e^{At} = e^{-t} [[1, 1000t],[0, 1]]
 t_check = t_vals[idx_max]
 eAt_analytic = np.exp(-t_check) * np.array([[1, 1000*t_check],
                                              [0, 1]])
-print(f"  Kiểm tra: ||e^At||_2 (giải tích) = "
+print(f"  Kiem tra: ||e^At||_2 (giai tich) = "
       f"{np.linalg.norm(eAt_analytic, 2):.1f}")
 \end{lstlisting}
 
@@ -1427,7 +1427,7 @@ import numpy as np
 from scipy.linalg import sqrtm, logm, svd
 
 # -------------------------------------------------------
-# 1. Lặp Newton cho hàm dấu ma trận
+# 1. Lap Newton cho ham dau ma tran
 #    S_{k+1} = 0.5*(S_k + S_k^{-1})
 # -------------------------------------------------------
 def matrix_sign_newton(A, max_iter=50, tol=1e-14):
@@ -1437,14 +1437,14 @@ def matrix_sign_newton(A, max_iter=50, tol=1e-14):
         S_new = 0.5 * (S + S_inv)
         residual = np.linalg.norm(S_new - S, 'fro')
         if residual < tol:
-            print(f"  [sign] Hội tụ sau {k+1} vòng lặp, phần dư = {residual:.2e}")
+            print(f"  [sign] Hoi tu sau {k+1} vong lap, phan du = {residual:.2e}")
             return S_new
         S = S_new
-    print(f"  [sign] Chưa hội tụ sau {max_iter} vòng lặp")
+    print(f"  [sign] Chua hoi tu sau {max_iter} vong lap")
     return S
 
 # -------------------------------------------------------
-# 2. Lặp Denman-Beavers cho căn bậc hai ma trận
+# 2. Lap Denman-Beavers cho can bac hai ma tran
 #    X_{k+1} = 0.5*(X_k + Y_k^{-1})
 #    Y_{k+1} = 0.5*(Y_k + X_k^{-1})
 # -------------------------------------------------------
@@ -1458,13 +1458,13 @@ def matrix_sqrt_denman_beavers(A, max_iter=50, tol=1e-14):
         Y_new = 0.5 * (Y + X_inv)
         err = np.linalg.norm(X_new @ X_new - A, 'fro')
         if err < tol:
-            print(f"  [sqrt] Hội tụ sau {k+1} vòng lặp, ||X^2-A||_F = {err:.2e}")
+            print(f"  [sqrt] Hoi tu sau {k+1} vong lap, ||X^2-A||_F = {err:.2e}")
             return X_new, Y_new
         X, Y = X_new, Y_new
     return X, Y
 
 # -------------------------------------------------------
-# 3. Phân tích cực: Newton lặp cho nhân tử trực giao
+# 3. Phan tich cuc: Newton lap cho nhan tu truc giao
 #    X_{k+1} = 0.5*(X_k + X_k^{-T})
 # -------------------------------------------------------
 def polar_newton(A, max_iter=50, tol=1e-14):
@@ -1474,14 +1474,14 @@ def polar_newton(A, max_iter=50, tol=1e-14):
         X_new = 0.5 * (X + X_invT)
         err = np.linalg.norm(X_new.T @ X_new - np.eye(A.shape[0]), 'fro')
         if err < tol:
-            print(f"  [polar] Hội tụ sau {k+1} vòng lặp, ||U^T U - I||_F = {err:.2e}")
+            print(f"  [polar] Hoi tu sau {k+1} vong lap, ||U^T U - I||_F = {err:.2e}")
             return X_new
         X = X_new
     return X
 
 # -------------------------------------------------------
-# 4. Logarit ma trận: Inverse Scaling and Squaring
-#    Dùng căn bậc hai lặp + Maclaurin cho log
+# 4. Logarit ma tran: Inverse Scaling and Squaring
+#    Dung can bac hai lap + Maclaurin cho log
 # -------------------------------------------------------
 def matrix_log_iss(A, tol_norm=0.5, q=20):
     """Inverse Scaling and Squaring cho logm."""
@@ -1490,50 +1490,50 @@ def matrix_log_iss(A, tol_norm=0.5, q=20):
     while np.linalg.norm(Ak - np.eye(Ak.shape[0]), 'fro') > tol_norm:
         Ak, _ = matrix_sqrt_denman_beavers(Ak, tol=1e-13)
         k += 1
-    # Tính log(Ak) bằng chuỗi Maclaurin (Ak gần I)
+    # Tinh log(Ak) bang chuoi Maclaurin (Ak gan I)
     B   = Ak - np.eye(Ak.shape[0])
     logA = np.zeros_like(B)
     Bk   = np.eye(Ak.shape[0])
     for j in range(1, q + 1):
         Bk    = Bk @ B
         logA += ((-1)**(j+1) / j) * Bk
-    return (2**k) * logA   # hoàn nguyên
+    return (2**k) * logA   # hoan nguyen
 
 # -------------------------------------------------------
-# ỨNG DỤNG VÀ KIỂM TRA
+# UNG DUNG VA KIEM TRA
 # -------------------------------------------------------
 A = np.array([[4.0, 3.0],
               [1.0, 2.0]])
 
-print("Ma trận A:")
+print("Ma tran A:")
 print(A)
 
-# Hàm dấu
+# Ham dau
 S = matrix_sign_newton(A)
-print("\nHàm dấu sign(A):")
+print("\nHam dau sign(A):")
 print(S.real)
 
-# Căn bậc hai
+# Can bac hai
 X_sqrt, _ = matrix_sqrt_denman_beavers(A)
 ref_sqrt   = sqrtm(A)
-print("\nCăn bậc hai A^{1/2} (Denman-Beavers):")
+print("\nCan bac hai A^{1/2} (Denman-Beavers):")
 print(X_sqrt)
-print(f"  Sai số so với sqrtm(scipy): {np.linalg.norm(X_sqrt - ref_sqrt, 'fro'):.2e}")
+print(f"  Sai so so voi sqrtm(scipy): {np.linalg.norm(X_sqrt - ref_sqrt, 'fro'):.2e}")
 
-# Phân tích cực
+# Phan tich cuc
 U_polar = polar_newton(A)
 U_svd   = (lambda U,_,Vt: U @ Vt)(*svd(A, full_matrices=False))
-print("\nNhân tử trực giao U (phân tích cực, Newton):")
+print("\nNhan tu truc giao U (phan tich cuc, Newton):")
 print(U_polar)
-print(f"  Sai số so với SVD: {np.linalg.norm(U_polar - U_svd, 'fro'):.2e}")
+print(f"  Sai so so voi SVD: {np.linalg.norm(U_polar - U_svd, 'fro'):.2e}")
 
 # Logarit
 L = matrix_log_iss(A, tol_norm=0.5, q=30)
 ref_log = logm(A)
-print("\nLogarit chính log(A) (Inverse Scaling and Squaring):")
+print("\nLogarit chinh log(A) (Inverse Scaling and Squaring):")
 print(L)
-print(f"  Sai số so với logm(scipy): {np.linalg.norm(L - ref_log, 'fro'):.2e}")
-print(f"  Kiểm tra: ||e^L - A||_F = "
+print(f"  Sai so so voi logm(scipy): {np.linalg.norm(L - ref_log, 'fro'):.2e}")
+print(f"  Kiem tra: ||e^L - A||_F = "
       f"{np.linalg.norm(np.linalg.matrix_power(np.eye(2), 0) + L - A, 'fro'):.2e}")
 \end{lstlisting}
 
@@ -1554,7 +1554,7 @@ chuẩn IEEE 754 double precision ($u \approx 2.22 \times 10^{-16}$).
 Toàn bộ mã thực nghiệm sử dụng các thư viện Python phổ biến, dễ dàng cài đặt:
 
 \begin{lstlisting}[style=python, caption={Thiết lập môi trường thực nghiệm}]
-# Cài đặt thư viện (nếu chưa có)
+# Cai dat thu vien (neu chua co)
 # pip install numpy scipy matplotlib
 
 import numpy as np
@@ -1562,23 +1562,23 @@ from scipy.linalg import (expm, logm, sqrtm,
                            schur, svd, norm)
 import time
 
-# Thiết lập random seed để tái hiện kết quả
+# Thiet lap random seed de tai hien ket qua
 np.random.seed(42)
 
-# Epsilon máy
+# Epsilon may
 u = np.finfo(float).eps
-print(f"Epsilon máy u = {u:.3e}")
-print(f"Phiên bản NumPy: {np.__version__}")
+print(f"Epsilon may u = {u:.3e}")
+print(f"Phien ban NumPy: {np.__version__}")
 
-# Hàm tạo ma trận ngẫu nhiên với số điều kiện cho trước
+# Ham tao ma tran ngau nhien voi so dieu kien cho truoc
 def random_matrix_cond(n, kappa):
-    """Tạo ma trận ngẫu nhiên n x n với condition number xấp xỉ kappa."""
+    """Tao ma tran ngau nhien n x n voi condition number xap xi kappa."""
     U, _ = np.linalg.qr(np.random.randn(n, n))
     V, _ = np.linalg.qr(np.random.randn(n, n))
     s = np.logspace(0, -np.log10(kappa), n)
     return U @ np.diag(s) @ V.T
 
-# Hàm đo sai số tương đối Frobenius
+# Ham do sai so tuong doi Frobenius
 def rel_err(F_approx, F_exact):
     denom = norm(F_exact, 'fro')
     return norm(F_approx - F_exact, 'fro') / denom if denom > 0 else float('inf')
@@ -1591,17 +1591,17 @@ các trường hợp khó khác nhau trong thực tế.
 
 \begin{lstlisting}[style=python, caption={Định nghĩa các ma trận thử nghiệm}]
 def test_matrices():
-    """Trả về dict các ma trận thử nghiệm chuẩn."""
+    """Tra ve dict cac ma tran thu nghiem chuan."""
     mats = {}
 
-    # 1. Ma trận chéo hóa được, điều kiện tốt
+    # 1. Ma tran cheo hoa duoc, dieu kien tot
     mats['diagonal'] = np.diag([1.0, 2.0, 3.0, 4.0])
 
-    # 2. Ma trận đối xứng xác định dương (SPD)
+    # 2. Ma tran doi xung xac dinh duong (SPD)
     B = np.random.randn(4, 4)
     mats['SPD'] = B.T @ B + 4 * np.eye(4)
 
-    # 3. Ma trận có trị riêng phức (xoay)
+    # 3. Ma tran co tri rieng phuc (xoay)
     theta = np.pi / 4
     mats['rotation'] = np.array([
         [ np.cos(theta), -np.sin(theta), 0, 0],
@@ -1610,7 +1610,7 @@ def test_matrices():
         [0, 0,  np.sin(theta),  np.cos(theta)]
     ])
 
-    # 4. Ma trận không chính tắc (non-normal) - khá khó
+    # 4. Ma tran khong chinh tac (non-normal) - kha kho
     mats['non_normal'] = np.array([
         [-1.0, 500.0, 0.0, 0.0],
         [ 0.0,  -1.0, 500.0, 0.0],
@@ -1618,7 +1618,7 @@ def test_matrices():
         [ 0.0,   0.0,  0.0, -1.0]
     ])
 
-    # 5. Ma trận trị riêng lặp (Jordan block 4x4)
+    # 5. Ma tran tri rieng lap (Jordan block 4x4)
     lam = 2.0
     mats['jordan'] = lam * np.eye(4) + np.diag([1, 1, 1], k=1)
 
@@ -1628,7 +1628,7 @@ MATS = test_matrices()
 for name, M in MATS.items():
     kappa = np.linalg.cond(M)
     eigvals = np.linalg.eigvals(M)
-    print(f"  {name:15s}: kích thước={M.shape}, "
+    print(f"  {name:15s}: kich thuoc={M.shape}, "
           f"kappa={kappa:.2e}, "
           f"trị riêng ~ {np.round(eigvals, 2)}")
 \end{lstlisting}
@@ -1644,13 +1644,13 @@ from scipy.linalg import expm, schur
 import time
 
 def expm_eigenvector(A):
-    """Tính e^A qua phân tích trị riêng."""
+    """Tinh e^A qua phan tich tri rieng."""
     lam, X = np.linalg.eig(A)
     return X @ np.diag(np.exp(lam)) @ np.linalg.inv(X)
 
 def expm_schur_parlett(A):
     """
-    Tính e^A qua Schur-Parlett (đơn giản hóa cho trị riêng phân biệt).
+    Tinh e^A qua Schur-Parlett (don gian hoa cho tri rieng phan biet).
     A = Q T Q^H  =>  e^A = Q e^T Q^H
     """
     T, Q = schur(A, output='complex')
@@ -1658,22 +1658,22 @@ def expm_schur_parlett(A):
     F    = np.zeros_like(T, dtype=complex)
     lam  = np.diag(T)
 
-    # Khởi tạo đường chéo
+    # Khoi tao duong cheo
     for i in range(n):
         F[i, i] = np.exp(lam[i])
 
-    # Tính các siêu đường chéo theo thứ tự p = 1, 2, ..., n-1
+    # Tinh cac sieu duong cheo theo thu tu p = 1, 2, ..., n-1
     for p in range(1, n):
         for i in range(n - p):
             j = i + p
             dl = lam[j] - lam[i]
             if abs(dl) > 1e-10:
-                # Sai phân chia bậc 1
+                # Sai phan chia bac 1
                 Fij = T[i, j] * (F[j, j] - F[i, i]) / dl
             else:
-                # Giới hạn: f'(lambda) khi trị riêng trùng nhau
+                # Gioi han: f'(lambda) khi tri rieng trung nhau
                 Fij = T[i, j] * np.exp(lam[i])
-            # Đóng góp từ các phần tử trung gian
+            # Dong gop tu cac phan tu trung gian
             for k in range(i + 1, j):
                 dlk = lam[j] - lam[k]
                 dki = lam[k] - lam[i]
@@ -1684,9 +1684,9 @@ def expm_schur_parlett(A):
     return (Q @ F @ Q.conj().T).real
 
 # -------------------------------------------------------
-# Chạy thử nghiệm trên các ma trận chuẩn
+# Chay thu nghiem tren cac ma tran chuan
 # -------------------------------------------------------
-print(f"{'Ma trận':15s} | {'Sai số Eig':10s} | {'Sai số Schur':10s} "
+print(f"{'Ma tran':15s} | {'Sai so Eig':10s} | {'Sai so Schur':10s} "
       f"| {'t_eig (ms)':11s} | {'t_schur (ms)':12s}")
 print("-" * 68)
 
@@ -1725,7 +1725,7 @@ def expm_taylor(A, q):
     return F
 
 def expm_taylor_scaled(A, q, j=None):
-    """Taylor với scaling: tính e^{A/2^j} rồi bình phương j lần."""
+    """Taylor voi scaling: tinh e^{A/2^j} roi binh phuong j lan."""
     norm_A = np.max(np.sum(np.abs(A), axis=1))
     if j is None:
         j = max(0, int(np.ceil(np.log2(norm_A))))
@@ -1734,15 +1734,15 @@ def expm_taylor_scaled(A, q, j=None):
     for _ in range(j): F = F @ F
     return F
 
-# Ma trận gây hủy số nhất
+# Ma tran gay huy so nhat
 A_bad = np.array([[-49.0, 24.0],
                   [-64.0, 31.0]])
 ref = expm(A_bad)
 
-print("Hiện tượng hủy số với A = [[-49,24],[-64,31]]")
-print(f"  Kết quả chính xác: \n{ref}\n")
+print("Hien tuong huy so voi A = [[-49,24],[-64,31]]")
+print(f"  Ket qua chinh xac: \n{ref}\n")
 
-print(f"  {'Bậc q':6s} | {'Taylor thuần (err)':20s} | {'Taylor + Scaling (err)':22s}")
+print(f"  {'Bac q':6s} | {'Taylor thuan (err)':20s} | {'Taylor + Scaling (err)':22s}")
 print("  " + "-"*55)
 for q in [5, 10, 15, 20, 30, 50, 59]:
     F_naive  = expm_taylor(A_bad, q)
@@ -1751,8 +1751,8 @@ for q in [5, 10, 15, 20, 30, 50, 59]:
     e_scaled = rel_err(F_scaled, ref)
     print(f"  {q:6d} | {e_naive:20.4e} | {e_scaled:22.4e}")
 
-# Theo dõi giá trị lớn nhất của các số hạng trung gian
-print("\nGiá trị lớn nhất của các số hạng Ak/k! (A_bad):")
+# Theo doi gia tri lon nhat cua cac so hang trung gian
+print("\nGia tri lon nhat cua cac so hang Ak/k! (A_bad):")
 n = A_bad.shape[0]
 Ak = np.eye(n); fact = 1.0
 for k in range(1, 21):
@@ -1777,20 +1777,20 @@ def expm_eigenvector_general(A):
     return (X @ np.diag(np.exp(lam)) @ np.linalg.inv(X)).real
 
 sizes = [4, 8, 16, 32, 64, 128, 256]
-n_repeat = 5   # số lần lặp để lấy trung bình
+n_repeat = 5   # so lan lap de lay trung binh
 
 print(f"{'n':>6} | {'t_eig (ms)':>12} | {'t_expm (ms)':>12} "
       f"| {'Tăng tốc':>8} | {'sai số eig':>10}")
 print("-" * 60)
 
 for n in sizes:
-    # Tạo ma trận ngẫu nhiên xác định dương (luôn có e^A xác định)
+    # Tao ma tran ngau nhien xac dinh duong (luon co e^A xac dinh)
     B = np.random.randn(n, n)
-    A = (B + B.T) / 2 - n * np.eye(n)   # đối xứng, âm định
+    A = (B + B.T) / 2 - n * np.eye(n)   # doi xung, am dinh
 
     ref = expm(A)
 
-    # Đo thời gian expm (SciPy -- Padé + Scaling&Squaring)
+    # Do thoi gian expm (SciPy -- Pade + Scaling&Squaring)
     t_expm_list = []
     for _ in range(n_repeat):
         t0 = time.perf_counter()
@@ -1798,7 +1798,7 @@ for n in sizes:
         t_expm_list.append((time.perf_counter() - t0) * 1000)
     t_expm = np.median(t_expm_list)
 
-    # Đo thời gian phương pháp trị riêng (chỉ khả thi khi n nhỏ)
+    # Do thoi gian phuong phap tri rieng (chi kha thi khi n nho)
     if n <= 64:
         t_eig_list = []
         for _ in range(n_repeat):
@@ -1811,7 +1811,7 @@ for n in sizes:
         print(f"{n:>6} | {t_eig:>12.3f} | {t_expm:>12.3f} "
               f"| {speedup:>8.2f}x | {err_eig:>10.2e}")
     else:
-        print(f"{n:>6} | {'N/A (quá lớn)':>12} | {t_expm:>12.3f} "
+        print(f"{n:>6} | {'N/A (qua lon)':>12} | {t_expm:>12.3f} "
               f"| {'---':>8} | {'---':>10}")
 \end{lstlisting}
 
@@ -1824,7 +1824,7 @@ Denman-Beavers, đồng thời so sánh kết quả với hàm chuẩn SciPy.
 import numpy as np
 from scipy.linalg import sqrtm, logm, expm
 
-# Cài đặt lại các hàm lặp với theo dõi hội tụ
+# Cai dat lai cac ham lap voi theo doi hoi tu
 def matrix_sign_newton_track(A, max_iter=30, tol=1e-14):
     S = A.astype(complex).copy()
     residuals = []
@@ -1852,57 +1852,57 @@ def matrix_sqrt_db_track(A, max_iter=30, tol=1e-14):
     return X, Y, residuals
 
 # -------------------------------------------------------
-# Ma trận thử nghiệm: SPD, để kiểm chứng
+# Ma tran thu nghiem: SPD, de kiem chung
 # -------------------------------------------------------
 B = np.array([[4.0, 2.0, 1.0],
               [2.0, 5.0, 3.0],
               [1.0, 3.0, 6.0]])
 
 print("=" * 55)
-print("MA TRẬN B =")
+print("MA TRAN B =")
 print(B)
-print(f"Trị riêng: {np.linalg.eigvals(B).real}")
+print(f"Tri rieng: {np.linalg.eigvals(B).real}")
 
-# Thí nghiệm: Hàm dấu sign(B)
-print("\n--- Hàm dấu ma trận (Newton) ---")
+# Thi nghiem: Ham dau sign(B)
+print("\n--- Ham dau ma tran (Newton) ---")
 S_B, res_sign = matrix_sign_newton_track(B)
 ref_sign = np.diag(np.sign(np.linalg.eigvals(B).real))
-# Lưu ý: sign(B) phụ thuộc vào trị riêng thực (đều dương => sign = I)
-print(f"  sign(B) (trị riêng đều dương, nên sign(B) = I):")
+# Luu y: sign(B) phu thuoc vao tri rieng thuc (deu duong => sign = I)
+print(f"  sign(B) (tri rieng deu duong, nen sign(B) = I):")
 print(f"  {np.diag(S_B.real)}")
-print("  Phần dư ||S^2 - I||_F theo vòng lặp:")
+print("  Phan du ||S^2 - I||_F theo vong lap:")
 for k, r in enumerate(res_sign):
-    print(f"    Vòng {k+1}: {r:.4e}")
+    print(f"    Vong {k+1}: {r:.4e}")
 
-# Thí nghiệm: Căn bậc hai Denman-Beavers
-print("\n--- Căn bậc hai ma trận (Denman-Beavers) ---")
+# Thi nghiem: Can bac hai Denman-Beavers
+print("\n--- Can bac hai ma tran (Denman-Beavers) ---")
 X_sqrt, _, res_sqrt = matrix_sqrt_db_track(B)
 ref_sqrt = sqrtm(B)
 err_sqrt = np.linalg.norm(X_sqrt - ref_sqrt, 'fro') / np.linalg.norm(ref_sqrt, 'fro')
-print(f"  Sai số so với sqrtm(scipy): {err_sqrt:.2e}")
-print("  Phần dư ||X^2 - B||_F theo vòng lặp:")
+print(f"  Sai so so voi sqrtm(scipy): {err_sqrt:.2e}")
+print("  Phan du ||X^2 - B||_F theo vong lap:")
 for k, r in enumerate(res_sqrt):
-    print(f"    Vòng {k+1}: {r:.4e}")
+    print(f"    Vong {k+1}: {r:.4e}")
 
-# Thí nghiệm: Logarit -- kiểm chứng e^{logm(B)} = B
-print("\n--- Logarit ma trận (SciPy logm) ---")
+# Thi nghiem: Logarit -- kiem chung e^{logm(B)} = B
+print("\n--- Logarit ma tran (SciPy logm) ---")
 L_B   = logm(B)
 check = expm(L_B)
 err_log = np.linalg.norm(check - B, 'fro') / np.linalg.norm(B, 'fro')
-print(f"  Sai số ||e^{{logm(B)}} - B||_F / ||B||_F = {err_log:.2e}")
+print(f"  Sai so ||e^{{logm(B)}} - B||_F / ||B||_F = {err_log:.2e}")
 
 # -------------------------------------------------------
-# Thí nghiệm phân tích cực với SVD đối chiếu
+# Thi nghiem phan tich cuc voi SVD doi chieu
 # -------------------------------------------------------
-print("\n--- Phân tích cực A = U P ---")
+print("\n--- Phan tich cuc A = U P ---")
 A_rect = np.array([[1.0, 2.0, 0.0],
                    [0.0, 3.0, 4.0],
                    [5.0, 0.0, 1.0]])
 Ua, Sa, Vat = np.linalg.svd(A_rect)
-U_polar_ref = Ua @ Vat          # nhân tử trực giao từ SVD
-P_polar_ref = Vat.T @ np.diag(Sa) @ Vat   # nhân tử xác định dương
+U_polar_ref = Ua @ Vat          # nhan tu truc giao tu SVD
+P_polar_ref = Vat.T @ np.diag(Sa) @ Vat   # nhan tu xac dinh duong
 
-# Newton lặp cho nhân tử trực giao
+# Newton lap cho nhan tu truc giao
 X = A_rect.copy()
 for k in range(30):
     X_new = 0.5 * (X + np.linalg.inv(X).T)
@@ -1912,9 +1912,9 @@ U_newton = X
 
 err_polar = np.linalg.norm(U_newton - U_polar_ref, 'fro')
 print(f"  ||U_Newton - U_SVD||_F = {err_polar:.2e}")
-print(f"  Kiểm tra trực giao: ||U^T U - I||_F = "
+print(f"  Kiem tra truc giao: ||U^T U - I||_F = "
       f"{np.linalg.norm(U_newton.T @ U_newton - np.eye(3), 'fro'):.2e}")
-print(f"  Kiểm tra phân tích: ||A - UP||_F = "
+print(f"  Kiem tra phan tich: ||A - UP||_F = "
       f"{np.linalg.norm(A_rect - U_newton @ P_polar_ref, 'fro'):.2e}")
 \end{lstlisting}
 
